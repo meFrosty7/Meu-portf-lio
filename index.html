@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frosty7 | Portfólio</title>
+    <style>
+        /* Configurações Globais e Cores */
+        :root {
+            --bg-principal: #0b0c10;
+            --bg-card: #1f2833;
+            --cor-neon: #45f3ff;
+            --cor-texto: #c5a059; /* Toque dourado para os recordes */
+            --texto-branco: #ffffff;
+            --texto-cinza: #a9b7c6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-principal);
+            color: var(--texto-branco);
+            overflow-x: hidden;
+        }
+
+        /* Animação de Entrada */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes flutuar {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* Cabeçalho / Hero Section */
+        header {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: radial-gradient(circle at center, #1f2833 0%, #0b0c10 70%);
+            padding: 20px;
+        }
+
+        .hero-badge {
+            background: rgba(69, 243, 255, 0.1);
+            border: 1px solid var(--cor-neon);
+            color: var(--cor-neon);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            animation: fadeIn 1s ease-out;
+        }
+
+        header h1 {
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            animation: fadeIn 1.2s ease-out;
+        }
+
+        header h1 span {
+            color: var(--cor-neon);
+            text-shadow: 0 0 10px rgba(69, 243, 255, 0.5);
+        }
+
+        header p {
+            font-size: 1.2rem;
+            color: var(--texto-cinza);
+            max-width: 600px;
+            margin-bottom: 30px;
+            animation: fadeIn 1.5s ease-out;
+        }
+
+        /* Grande Estatística */
+        .stats-banner {
+            background: linear-gradient(135deg, #1f2833, #0b0c10);
+            border: 2px solid var(--cor-neon);
+            padding: 20px 40px;
+            border-radius: 15px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--texto-branco);
+            box-shadow: 0 0 20px rgba(69, 243, 255, 0.2);
+            animation: flutuar 4s ease-in-out infinite;
+        }
+
+        .stats-banner span {
+            color: var(--cor-neon);
+            font-size: 2rem;
+        }
+
+        /* Seções Gerais */
+        section {
+            padding: 80px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        section h2 {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        section h2::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 4px;
+            background-color: var(--cor-neon);
+            margin: 10px auto 0 auto;
+            border-radius: 2px;
+        }
+
+        /* Grid de Tecnologias */
+        .tech-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .tech-badge {
+            background-color: var(--bg-card);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+
+        .tech-badge:hover {
+            transform: translateY(-5px);
+            border-color: var(--cor-neon);
+            color: var(--cor-neon);
+            box-shadow: 0 5px 15px rgba(69, 243, 255, 0.2);
+        }
+
+        /* Grid de Projetos */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .project-card {
+            background-color: var(--bg-card);
+            border-radius: 12px;
+            padding: 30px;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .project-card:hover {
+            transform: scale(1.03);
+            border-color: var(--cor-neon);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .project-card h3 {
+            font-size: 1.6rem;
+            margin-bottom: 10px;
+            color: var(--texto-branco);
+        }
+
+        .project-visits {
+            font-size: 0.9rem;
+            color: var(--cor-neon);
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        .project-card p {
+            color: var(--texto-cinza);
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .btn-project {
+            align-self: flex-start;
+            background-color: transparent;
+            border: 2px solid var(--cor-neon);
+            color: var(--cor-neon);
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-project:hover {
+            background-color: var(--cor-neon);
+            color: var(--bg-principal);
+            box-shadow: 0 0 15px var(--cor-neon);
+        }
+
+        /* Rodapé */
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            color: var(--texto-cinza);
+            font-size: 0.9rem;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            header h1 { font-size: 2.5rem; }
+            .stats-banner { font-size: 1.2rem; padding: 15px 25px; }
+            .stats-banner span { font-size: 1.6rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Hero Section -->
+    <header>
+        <div class="hero-badge">Em breve desenvolvedor de software</div>
+        <h1>Olá, eu sou o <span>Frosty7</span></h1>
+        <p>Desenvolvedor focado em criar experiências interativas no Roblox, automações inteligentes para o Discord e aplicações web modernas.</p>
+        
+        <div class="stats-banner">
+            🚀 Mais de <span>12M+</span> de Visitas Contribuídas
+        </div>
+    </header>
+
+    <!-- Seção de Tecnologias -->
+    <section id="tecnologias">
+        <h2>Tecnologias & Linguagens</h2>
+        <div class="tech-container">
+            <div class="tech-badge">Lua</div>
+            <div class="tech-badge">Luau</div>
+            <div class="tech-badge">Node.js</div>
+            <div class="tech-badge">Python</div>
+            <div class="tech-badge">HTML5</div>
+            <div class="tech-badge">CSS3</div>
+        </div>
+    </section>
+
+    <!-- Seção de Projetos -->
+    <section id="projetos">
+        <h2>Meus Projetos & Atuações</h2>
+        <div class="projects-grid">
+            
+            <!-- Drive Brasil -->
+            <div class="project-card">
+                <div>
+                    <h3>Drive Brasil</h3>
+                    <div class="project-visits">⭐ 12M+ Visitas</div>
+                    <p>Grande projeto no Roblox focado em simulação de condução e ambiente brasileiro. Responsável por mecânicas principais e otimização de sistemas.</p>
+                </div>
+                <a href="https://www.roblox.com/share?code=ce2c933129b1824eacd09b824f7fb8d0&type=ExperienceDetails&stamp=1783564514385" target="_blank" class="btn-project">Jogar Experiência</a>
+            </div>
+
+            <!-- Dichava SP -->
+            <div class="project-card">
+                <div>
+                    <h3>Dichava SP</h3>
+                    <div class="project-visits">⭐ 150k+ Visitas</div>
+                    <p>Experiência imersiva no cenário de São Paulo. Desenvolvimento focado na jogabilidade, integração de assets e scripts dinâmicos em Luau.</p>
+                </div>
+                <a href="https://www.roblox.com/share?code=4e9e07d958dd3a49b4c57fcf5fc34779&type=ExperienceDetails&stamp=1783564482607" target="_blank" class="btn-project">Jogar Experiência</a>
+            </div>
+
+            <!-- Lunar Studio Games -->
+            <div class="project-card">
+                <div>
+                    <h3>Lunar Studio Games</h3>
+                    <div class="project-visits">👑 Fundador / Owner</div>
+                    <p>Estúdio focado na criação e gerenciamento de experiências marcantes para a plataforma Roblox, unindo desenvolvedores e gerando inovação.</p>
+                </div>
+                <a href="https://www.roblox.com/share/g/385960543" target="_blank" class="btn-project">Ver Grupo</a>
+            </div>
+
+            <!-- Outras Atuações -->
+            <div class="project-card">
+                <div>
+                    <h3>Bots para Discord & Web</h3>
+                    <div class="project-visits">💻 Automação & Web Dev</div>
+                    <p>Criação de bots inteligentes e robustos com Node.js e Python para gestão de comunidades, além do desenvolvimento de landing pages e sites responsivos.</p>
+                </div>
+                <span style="color: var(--texto-cinza); font-style: italic; font-size: 0.9rem;">Portfólio Ativo</span>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Rodapé -->
+    <footer>
+        <p>&copy; 2026 Frosty7 Portifolio. Tudo pronto para o próximo nível.</p>
+    </footer>
+
+</body>
+</html>
