@@ -1342,6 +1342,7 @@
 
   <div class="toast" id="toast">IP copiado!</div>
 
+
 <script>
   const SERVER_ADDRESS = 'Ethernals.aternos.me:12701';
 
@@ -1390,8 +1391,42 @@
     });
   });
 
+  function normalizeText(value) {
+    if (Array.isArray(value)) {
+      return value.join(' ').replace(/\s+/g, ' ').trim();
+    }
+
+    if (value && typeof value === 'object') {
+      if (Array.isArray(value.clean)) {
+        return value.clean.join(' ').replace(/\s+/g, ' ').trim();
+      }
+      if (typeof value.clean === 'string') {
+        return value.clean.replace(/\s+/g, ' ').trim();
+      }
+      return '';
+    }
+
+    return String(value ?? '').replace(/\s+/g, ' ').trim();
+  }
+
+  function motdIsOffline(motd) {
+    const text = normalizeText(motd)
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
+
+    return [
+      'offline aternos',
+      'aternos offline',
+      'server is offline',
+      'server offline',
+      'servidor offline',
+      'servidor esta offline',
+      'servidor desligado'
+    ].some(term => text.includes(term));
+  }
+
   function setChecking() {
-    if (!statusDot || !statusText || !statusDetail || !playerCount) return;
     statusDot.className = 'status-dot';
     statusText.textContent = 'VERIFICANDO SERVIDOR...';
     statusDetail.textContent = SERVER_ADDRESS;
@@ -1415,36 +1450,119 @@
   function setUnavailable() {
     statusDot.className = 'status-dot';
     statusText.textContent = 'STATUS INDISPONÍVEL';
-    statusDetail.textContent = 'Não foi possível consultar agora';
+    statusDetail.textContent = 'As fontes de status não responderam agora';
     playerCount.textContent = '— / —';
+  }
+
+  async function fetchJson(url, timeoutMs = 7000) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+    try {
+      const response = await fetch(url, {
+        cache: 'no-store',
+        signal: controller.signal,
+        headers: { 'Accept': 'application/json' }
+      });
+
+      if (!response.ok) throw new Error('HTTP ' + response.status);
+      return await response.json();
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  const STATUS_PROVIDERS = [
+    {
+      name: 'SnowDev',
+      url: 'https://mcstatus.snowdev.com.br/api/query/v3/' + encodeURIComponent(SERVER_ADDRESS),
+      parse(data) {
+        return {
+          online: Boolean(data?.online),
+          playersOnline: Number(data?.players?.online ?? data?.players?.now ?? data?.onlinePlayers ?? 0),
+          playersMax: data?.players?.max ?? data?.maxPlayers ?? '—',
+          motd: normalizeText(data?.motd?.clean ?? data?.motd ?? '')
+        };
+      }
+    },
+    {
+      name: 'mcstatus.io',
+      url: 'https://api.mcstatus.io/v2/status/bedrock/' + encodeURIComponent(SERVER_ADDRESS) + '?timeout=5',
+      parse(data) {
+        return {
+          online: Boolean(data?.online),
+          playersOnline: Number(data?.players?.online ?? 0),
+          playersMax: data?.players?.max ?? '—',
+          motd: normalizeText(data?.motd?.clean ?? '')
+        };
+      }
+    },
+    {
+      name: 'mcsrvstat.us',
+      url: 'https://api.mcsrvstat.us/bedrock/3/' + encodeURIComponent(SERVER_ADDRESS),
+      parse(data) {
+        return {
+          online: Boolean(data?.online),
+          playersOnline: Number(data?.players?.online ?? 0),
+          playersMax: data?.players?.max ?? '—',
+          motd: normalizeText(data?.motd?.clean ?? '')
+        };
+      }
+    }
+  ];
+
+  async function checkProvider(provider) {
+    const data = await fetchJson(provider.url);
+    const parsed = provider.parse(data);
+
+    return {
+      provider: provider.name,
+      ...parsed,
+      explicitOffline: motdIsOffline(parsed.motd)
+    };
   }
 
   async function refreshServerStatus() {
     setChecking();
 
-    try {
-      const response = await fetch('/api/status?t=' + Date.now(), {
-        cache: 'no-store',
-        headers: { 'Accept': 'application/json' }
-      });
+    const settled = await Promise.allSettled(
+      STATUS_PROVIDERS.map(checkProvider)
+    );
 
-      if (!response.ok) {
-        throw new Error('HTTP ' + response.status);
-      }
+    const results = settled
+      .filter(item => item.status === 'fulfilled')
+      .map(item => item.value);
 
-      const data = await response.json();
-
-      if (data.online === true) {
-        setOnline(data);
-      } else if (data.online === false) {
-        setOffline(data.detail || 'Servidor desligado no Aternos');
-      } else {
-        setUnavailable();
-      }
-    } catch (error) {
-      console.error('Falha ao consultar status:', error);
+    if (results.length === 0) {
       setUnavailable();
+      return;
     }
+
+    // "Offline Aternos" has priority over a provider claiming online.
+    const explicitOffline = results.find(r => r.explicitOffline);
+    if (explicitOffline) {
+      setOffline('Servidor desligado no Aternos');
+      return;
+    }
+
+    const onlineResults = results.filter(r => r.online === true);
+    const offlineResults = results.filter(r => r.online === false);
+
+    if (onlineResults.length > offlineResults.length) {
+      const best =
+        onlineResults.find(r => r.playersMax !== '—' && r.playersMax != null) ||
+        onlineResults[0];
+
+      setOnline(best);
+      return;
+    }
+
+    if (offlineResults.length > 0) {
+      setOffline('Servidor offline');
+      return;
+    }
+
+    setUnavailable();
   }
 
   refreshStatusButton?.addEventListener('click', refreshServerStatus);
