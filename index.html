@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#08110d" />
   <meta name="description" content="Ethernals Bedrock — servidor Minecraft Bedrock Survival focado em economia, PvP e clãs." />
+  <link rel="icon" type="image/png" href="ethernals-icon.png" />
+  <link rel="apple-touch-icon" href="ethernals-icon.png" />
   <title>Ethernals Bedrock — Survival, Economia e PvP</title>
 
   <style>
@@ -782,72 +784,8 @@
       line-height: 1.55;
     }
 
-    .music-control {
-      position: fixed;
-      right: 18px;
-      bottom: 18px;
-      z-index: 120;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 12px;
-      border-radius: 15px;
-      background: rgba(3, 9, 15, .92);
-      border: 1px solid rgba(105,169,255,.20);
-      backdrop-filter: blur(16px);
-      box-shadow: 0 16px 40px rgba(0,0,0,.38);
-      max-width: min(360px, calc(100vw - 36px));
-    }
 
-    .music-art {
-      width: 38px;
-      height: 38px;
-      border-radius: 10px;
-      display: grid;
-      place-items: center;
-      background: linear-gradient(135deg, #73b6ff, #2f7df4);
-      color: #02070c;
-      font-size: 18px;
-      font-weight: 950;
-      flex: 0 0 auto;
-    }
-
-    .music-info {
-      min-width: 0;
-      flex: 1;
-    }
-
-    .music-info strong,
-    .music-info span {
-      display: block;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .music-info strong {
-      font-size: 12px;
-      color: white;
-    }
-
-    .music-info span {
-      margin-top: 2px;
-      color: var(--muted);
-      font-size: 10px;
-    }
-
-    .music-button {
-      border: 0;
-      min-width: 38px;
-      height: 38px;
-      border-radius: 10px;
-      cursor: pointer;
-      background: #dcecff;
-      color: #06101a;
-      font-weight: 950;
-    }
-
-    .yt-bg-player {
+    .yt-bg-player-removed {
       position: fixed;
       width: 1px;
       height: 1px;
@@ -868,10 +806,7 @@
     .rule,
     .backup-card,
     .status-card,
-    .music-control {
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-        "Segoe UI", "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
-    }
+
 
     .mc-window {
       background:
@@ -983,6 +918,73 @@
       .server-brand-badges {
         margin-left: 0;
       }
+    }
+
+
+    .enter-overlay.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .enter-card {
+      width: min(520px, 100%);
+      text-align: center;
+      padding: 34px;
+      border-radius: 28px;
+      background:
+        linear-gradient(145deg, rgba(47,125,244,.12), rgba(255,255,255,.025)),
+        #07111d;
+      border: 1px solid rgba(105,169,255,.22);
+      box-shadow: 0 30px 90px rgba(0,0,0,.55);
+    }
+
+    .enter-card img {
+      width: 104px;
+      height: 104px;
+      object-fit: cover;
+      border-radius: 24px;
+      border: 1px solid rgba(255,255,255,.12);
+      box-shadow: 0 18px 48px rgba(47,125,244,.28);
+      margin-bottom: 20px;
+    }
+
+    .enter-card h2 {
+      margin: 0 0 10px;
+      font-size: clamp(30px, 6vw, 48px);
+    }
+
+    .enter-card p {
+      margin: 0 auto 24px;
+      max-width: 430px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .enter-site-button {
+      width: 100%;
+      min-height: 54px;
+      border: 0;
+      border-radius: 15px;
+      cursor: pointer;
+      background: linear-gradient(135deg, #76b8ff, #2f7df4);
+      color: #02070c;
+      font-weight: 950;
+      font-size: 15px;
+      box-shadow: 0 16px 40px rgba(47,125,244,.25);
+    }
+
+    .enter-note {
+      display: block;
+      margin-top: 12px;
+      color: #829bb7;
+      font-size: 11px;
+    }
+
+
+    @media (max-width: 560px) {
+
+      .enter-card { padding: 26px 20px; }
     }
 
   </style>
@@ -1402,83 +1404,7 @@
   </footer>
 
   <div class="toast" id="toast">IP copiado!</div>
-
-  <script src="https://www.youtube.com/iframe_api">
-    let backgroundMusicPlayer = null;
-    let musicReady = false;
-    let musicPlaying = false;
-    let userActivatedMusic = false;
-
-    const musicToggle = document.getElementById('music-toggle');
-    const musicStatus = document.getElementById('music-status');
-
-    window.onYouTubeIframeAPIReady = function () {
-      backgroundMusicPlayer = new YT.Player('yt-background-player', {
-        height: '1',
-        width: '1',
-        videoId: 'NpU_aN54eJA',
-        playerVars: {
-          autoplay: 0,
-          controls: 0,
-          disablekb: 1,
-          fs: 0,
-          modestbranding: 1,
-          playsinline: 1,
-          rel: 0,
-          loop: 1,
-          playlist: 'NpU_aN54eJA'
-        },
-        events: {
-          onReady: function () {
-            musicReady = true;
-            backgroundMusicPlayer.setVolume(28);
-          },
-          onStateChange: function (event) {
-            if (event.data === YT.PlayerState.PLAYING) {
-              musicPlaying = true;
-              musicToggle.textContent = '❚❚';
-              musicStatus.textContent = 'Tocando em segundo plano';
-            } else if (event.data === YT.PlayerState.PAUSED) {
-              musicPlaying = false;
-              musicToggle.textContent = '▶';
-              musicStatus.textContent = 'Música pausada';
-            }
-          }
-        }
-      });
-    };
-
-    function playBackgroundMusic() {
-      if (!musicReady || !backgroundMusicPlayer) return;
-      userActivatedMusic = true;
-      backgroundMusicPlayer.playVideo();
-    }
-
-    function pauseBackgroundMusic() {
-      if (!musicReady || !backgroundMusicPlayer) return;
-      backgroundMusicPlayer.pauseVideo();
-    }
-
-    musicToggle?.addEventListener('click', () => {
-      if (!musicReady) {
-        musicStatus.textContent = 'Player carregando...';
-        return;
-      }
-
-      if (musicPlaying) pauseBackgroundMusic();
-      else playBackgroundMusic();
-    });
-
-    function startMusicOnFirstInteraction() {
-      if (userActivatedMusic || !musicReady) return;
-      playBackgroundMusic();
-    }
-
-    document.addEventListener('click', startMusicOnFirstInteraction, { once: true });
-    document.addEventListener('touchstart', startMusicOnFirstInteraction, { once: true });
-
-  </script>
-  <script>
+<script>
     const copyButton = document.getElementById('copy-ip');
     const toast = document.getElementById('toast');
 
@@ -1687,20 +1613,54 @@
     refreshServerStatus();
     setInterval(refreshServerStatus, 30000);
 
+
+const enterSiteButton = document.getElementById('enter-site');
+
+    if (backgroundMusic) {
+      backgroundMusic.volume = 0.25;
+    }
+
+    function syncMusicUi() {
+      if (!backgroundMusic || !musicToggle || !musicStatus) return;
+      const playing = !backgroundMusic.paused;
+      musicToggle.textContent = playing ? '❚❚' : '▶';
+      musicStatus.textContent = playing ? 'Tocando em segundo plano' : 'Música pausada';
+    }
+
+    async function startLocalMusic() {
+      if (!backgroundMusic) return;
+      try {
+        await backgroundMusic.play();
+      } catch (error) {
+        console.warn('O navegador bloqueou a reprodução automática:', error);
+      }
+      syncMusicUi();
+    }
+
+    enterSiteButton?.addEventListener('click', async () => {
+      await startLocalMusic();
+      enterOverlay?.classList.add('hidden');
+      try { localStorage.setItem('ethernals-entered', '1'); } catch {}
+    });
+if (backgroundMusic.paused) await startLocalMusic();
+      else backgroundMusic.pause();
+      syncMusicUi();
+    });
+backgroundMusic.volume = Number(musicVolume.value) / 100;
+    });
+
+    backgroundMusic?.addEventListener('play', syncMusicUi);
+    backgroundMusic?.addEventListener('pause', syncMusicUi);
+    backgroundMusic?.addEventListener('ended', syncMusicUi);
+
   </script>
-
-  <div class="yt-bg-player">
-    <div id="yt-background-player"></div>
-  </div>
-
-  <div class="music-control" id="music-control">
-    <div class="music-art">♫</div>
-    <div class="music-info">
+</div>
+<div class="music-info">
       <strong>Jerk — Oliver Tree</strong>
-      <span id="music-status">Clique para ativar a música</span>
+      <span id="music-status">Música pronta</span>
     </div>
+    <input class="music-volume" id="music-volume" type="range" min="0" max="100" value="25" aria-label="Volume da música" />
     <button class="music-button" id="music-toggle" type="button" aria-label="Tocar ou pausar música">▶</button>
   </div>
-
 </body>
 </html>
