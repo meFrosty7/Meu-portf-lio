@@ -1,317 +1,1706 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Frosty7 | Portfólio</title>
-    <style>
-        /* Configurações Globais e Cores */
-        :root {
-            --bg-principal: #0b0c10;
-            --bg-card: #1f2833;
-            --cor-neon: #45f3ff;
-            --cor-texto: #c5a059; /* Toque dourado para os recordes */
-            --texto-branco: #ffffff;
-            --texto-cinza: #a9b7c6;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#08110d" />
+  <meta name="description" content="Ethernals Bedrock — servidor Minecraft Bedrock Survival focado em economia, PvP e clãs." />
+  <title>Ethernals Bedrock — Survival, Economia e PvP</title>
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            scroll-behavior: smooth;
-        }
+  <style>
+    :root {
+      --bg: #03070c;
+      --bg-2: #07111c;
+      --card: rgba(17, 31, 23, .78);
+      --card-strong: #0a1726;
+      --line: rgba(255,255,255,.09);
+      --text: #f3f8f5;
+      --muted: #9fb9d6;
+      --blue: #69a9ff;
+      --blue-2: #2f7df4;
+      --gold: #9fd0ff;
+      --red: #6eb5ff;
+      --cyan: #8fd1ff;
+      --shadow: 0 24px 70px rgba(0,0,0,.38);
+      --radius: 22px;
+    }
 
-        body {
-            background-color: var(--bg-principal);
-            color: var(--texto-branco);
-            overflow-x: hidden;
-        }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 18% 0%, rgba(47,125,244,.16), transparent 28%),
+        radial-gradient(circle at 92% 12%, rgba(110,231,255,.08), transparent 24%),
+        linear-gradient(180deg, #02060b 0%, #06101a 48%, #02060b 100%);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
 
-        /* Animação de Entrada */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .18;
+      background-image:
+        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+      background-size: 42px 42px;
+      background-position: center top;
+      mask-image: linear-gradient(to bottom, black, transparent 82%);
+    }
 
-        @keyframes flutuar {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
-        }
+    a { color: inherit; text-decoration: none; }
 
-        /* Cabeçalho / Hero Section */
-        header {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            background: radial-gradient(circle at center, #1f2833 0%, #0b0c10 70%);
-            padding: 20px;
-        }
+    .container {
+      width: min(1180px, calc(100% - 36px));
+      margin-inline: auto;
+    }
 
-        .hero-badge {
-            background: rgba(69, 243, 255, 0.1);
-            border: 1px solid var(--cor-neon);
-            color: var(--cor-neon);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 20px;
-            animation: fadeIn 1s ease-out;
-        }
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(18px);
+      background: rgba(5, 13, 9, .72);
+      border-bottom: 1px solid var(--line);
+    }
 
-        header h1 {
-            font-size: 3.5rem;
-            margin-bottom: 10px;
-            animation: fadeIn 1.2s ease-out;
-        }
+    .nav-wrap {
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
 
-        header h1 span {
-            color: var(--cor-neon);
-            text-shadow: 0 0 10px rgba(69, 243, 255, 0.5);
-        }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      font-weight: 900;
+      letter-spacing: -.03em;
+    }
 
-        header p {
-            font-size: 1.2rem;
-            color: var(--texto-cinza);
-            max-width: 600px;
-            margin-bottom: 30px;
-            animation: fadeIn 1.5s ease-out;
-        }
+    .logo {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #6eb5ff, #2f7df4);
+      color: #03101d;
+      box-shadow: 0 10px 34px rgba(47,125,244,.34);
+      font-size: 20px;
+    }
 
-        /* Grande Estatística */
-        .stats-banner {
-            background: linear-gradient(135deg, #1f2833, #0b0c10);
-            border: 2px solid var(--cor-neon);
-            padding: 20px 40px;
-            border-radius: 15px;
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--texto-branco);
-            box-shadow: 0 0 20px rgba(69, 243, 255, 0.2);
-            animation: flutuar 4s ease-in-out infinite;
-        }
+    .brand small {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      margin-top: 1px;
+    }
 
-        .stats-banner span {
-            color: var(--cor-neon);
-            font-size: 2rem;
-        }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      color: #dbeaff;
+      font-size: 14px;
+      font-weight: 700;
+    }
 
-        /* Seções Gerais */
-        section {
-            padding: 80px 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+    .nav-links a:hover { color: var(--blue); }
 
-        section h2 {
-            font-size: 2.5rem;
-            text-align: center;
-            margin-bottom: 50px;
-            position: relative;
-        }
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      min-height: 48px;
+      padding: 0 20px;
+      border-radius: 14px;
+      border: 1px solid transparent;
+      font-weight: 900;
+      cursor: pointer;
+      transition: .22s ease;
+      font-size: 14px;
+    }
 
-        section h2::after {
-            content: '';
-            display: block;
-            width: 60px;
-            height: 4px;
-            background-color: var(--cor-neon);
-            margin: 10px auto 0 auto;
-            border-radius: 2px;
-        }
+    .button.primary {
+      color: #03101d;
+      background: linear-gradient(135deg, var(--blue), #a0ffbd);
+      box-shadow: 0 14px 35px rgba(47,125,244,.22);
+    }
 
-        /* Grid de Tecnologias */
-        .tech-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 15px;
-        }
+    .button.primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 42px rgba(47,125,244,.30);
+    }
 
-        .tech-badge {
-            background-color: var(--bg-card);
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 15px 30px;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            cursor: default;
-        }
+    .button.secondary {
+      background: rgba(255,255,255,.04);
+      border-color: var(--line);
+      color: white;
+    }
 
-        .tech-badge:hover {
-            transform: translateY(-5px);
-            border-color: var(--cor-neon);
-            color: var(--cor-neon);
-            box-shadow: 0 5px 15px rgba(69, 243, 255, 0.2);
-        }
+    .button.secondary:hover {
+      background: rgba(255,255,255,.08);
+      border-color: rgba(255,255,255,.18);
+    }
 
-        /* Grid de Projetos */
-        .projects-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-        }
+    .hero {
+      padding: 100px 0 76px;
+      position: relative;
+    }
 
-        .project-card {
-            background-color: var(--bg-card);
-            border-radius: 12px;
-            padding: 30px;
-            border: 1px solid rgba(255,255,255,0.05);
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.05fr .95fr;
+      align-items: center;
+      gap: 54px;
+    }
 
-        .project-card:hover {
-            transform: scale(1.03);
-            border-color: var(--cor-neon);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
-        }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 12px;
+      border: 1px solid rgba(105,169,255,.28);
+      background: rgba(105,169,255,.09);
+      color: #d9ecff;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      margin-bottom: 20px;
+    }
 
-        .project-card h3 {
-            font-size: 1.6rem;
-            margin-bottom: 10px;
-            color: var(--texto-branco);
-        }
+    .pulse {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--blue);
+      box-shadow: 0 0 0 6px rgba(105,169,255,.12);
+    }
 
-        .project-visits {
-            font-size: 0.9rem;
-            color: var(--cor-neon);
-            font-weight: bold;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-        }
+    h1 {
+      margin: 0;
+      font-size: clamp(46px, 7vw, 82px);
+      line-height: .96;
+      letter-spacing: -.06em;
+      max-width: 780px;
+    }
 
-        .project-card p {
-            color: var(--texto-cinza);
-            font-size: 1rem;
-            line-height: 1.5;
-            margin-bottom: 20px;
-        }
+    .hero h1 span {
+      color: var(--blue);
+      text-shadow: 0 0 36px rgba(105,169,255,.18);
+    }
 
-        .btn-project {
-            align-self: flex-start;
-            background-color: transparent;
-            border: 2px solid var(--cor-neon);
-            color: var(--cor-neon);
-            padding: 10px 20px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-        }
+    .hero-copy {
+      max-width: 700px;
+      margin: 24px 0 30px;
+      color: var(--muted);
+      font-size: clamp(17px, 2vw, 20px);
+      line-height: 1.65;
+    }
 
-        .btn-project:hover {
-            background-color: var(--cor-neon);
-            color: var(--bg-principal);
-            box-shadow: 0 0 15px var(--cor-neon);
-        }
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 30px;
+    }
 
-        /* Rodapé */
-        footer {
-            text-align: center;
-            padding: 40px 20px;
-            border-top: 1px solid rgba(255,255,255,0.05);
-            color: var(--texto-cinza);
-            font-size: 0.9rem;
-        }
+    .mini-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
 
-        /* Responsividade */
-        @media (max-width: 768px) {
-            header h1 { font-size: 2.5rem; }
-            .stats-banner { font-size: 1.2rem; padding: 15px 25px; }
-            .stats-banner span { font-size: 1.6rem; }
-        }
-    </style>
+    .mini-stat {
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.035);
+      border-radius: 14px;
+      min-width: 132px;
+    }
+
+    .mini-stat strong {
+      display: block;
+      color: white;
+      font-size: 17px;
+      margin-bottom: 2px;
+    }
+
+    .mini-stat span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .server-card {
+      position: relative;
+      padding: 22px;
+      border-radius: 28px;
+      border: 1px solid rgba(255,255,255,.11);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.025)),
+        rgba(8, 21, 14, .75);
+      box-shadow: var(--shadow), 0 0 0 1px rgba(105,169,255,.025);
+      overflow: hidden;
+    }
+
+    .server-card::before {
+      content: "";
+      position: absolute;
+      inset: -30%;
+      background:
+        radial-gradient(circle, rgba(105,169,255,.18), transparent 34%),
+        radial-gradient(circle at 80% 20%, rgba(255,209,102,.12), transparent 20%);
+      filter: blur(30px);
+      pointer-events: none;
+    }
+
+    .mc-window {
+      position: relative;
+      z-index: 2;
+      min-height: 420px;
+      border-radius: 20px;
+      background:
+        linear-gradient(rgba(2,7,14,.12), rgba(2,7,14,.72)),
+        linear-gradient(135deg, #0e2b4f 0 25%, #091f39 25% 50%, #12345a 50% 75%, #081a2e 75%);
+      background-size: auto, 96px 96px;
+      border: 1px solid rgba(255,255,255,.08);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 24px;
+    }
+
+    .floating-tag {
+      align-self: center;
+      margin-bottom: auto;
+      margin-top: 76px;
+      text-align: center;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,.7));
+    }
+
+    .floating-tag strong {
+      display: block;
+      font-size: 19px;
+      color: #80f5ff;
+    }
+
+    .floating-tag span {
+      color: #d9ecff;
+      font-weight: 900;
+      font-size: 17px;
+    }
+
+    .server-info {
+      padding: 16px;
+      border-radius: 15px;
+      background: rgba(4,10,7,.76);
+      border: 1px solid rgba(255,255,255,.09);
+      backdrop-filter: blur(12px);
+    }
+
+    .server-info-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      padding: 7px 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .server-info-row strong { color: white; }
+
+    section { padding: 80px 0; }
+
+    .section-head {
+      max-width: 760px;
+      margin-bottom: 34px;
+    }
+
+    .eyebrow {
+      color: var(--blue);
+      text-transform: uppercase;
+      font-size: 12px;
+      font-weight: 950;
+      letter-spacing: .16em;
+      margin-bottom: 9px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: clamp(34px, 5vw, 54px);
+      letter-spacing: -.045em;
+      line-height: 1.02;
+    }
+
+    .section-head p {
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 16px;
+      margin-bottom: 0;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .feature {
+      padding: 24px;
+      border-radius: var(--radius);
+      background: var(--card);
+      border: 1px solid var(--line);
+      min-height: 220px;
+      transition: .22s ease;
+    }
+
+    .feature:hover {
+      transform: translateY(-4px);
+      border-color: rgba(105,169,255,.28);
+      background: rgba(20, 39, 28, .88);
+    }
+
+    .icon {
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: rgba(105,169,255,.12);
+      border: 1px solid rgba(105,169,255,.18);
+      font-size: 23px;
+      margin-bottom: 20px;
+    }
+
+    .feature h3 {
+      font-size: 19px;
+      margin: 0 0 9px;
+    }
+
+    .feature p {
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: 14px;
+      margin: 0;
+    }
+
+    .highlight {
+      border-color: rgba(255,209,102,.20);
+      background:
+        radial-gradient(circle at 90% 0%, rgba(255,209,102,.08), transparent 30%),
+        var(--card);
+    }
+
+    .economy-strip {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .price-card {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 18px;
+      background: rgba(255,255,255,.028);
+    }
+
+    .price-card span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .price-card strong {
+      display: block;
+      margin-top: 5px;
+      font-size: 20px;
+      color: #d9ecff;
+    }
+
+    .clan-panel {
+      display: grid;
+      grid-template-columns: .95fr 1.05fr;
+      gap: 20px;
+    }
+
+    .glass {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 26px;
+      box-shadow: var(--shadow), 0 0 0 1px rgba(105,169,255,.025);
+    }
+
+    .tag-demo {
+      min-height: 330px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      background:
+        radial-gradient(circle at center, rgba(110,231,255,.10), transparent 35%),
+        var(--card);
+    }
+
+    .tag-demo .player {
+      font-size: 22px;
+      font-weight: 950;
+      filter: drop-shadow(0 3px 8px rgba(0,0,0,.7));
+    }
+
+    .tag-demo .player .tag { color: #6ee7ff; }
+    .tag-demo .money {
+      display: block;
+      margin-top: 7px;
+      color: #d9ecff;
+      font-weight: 950;
+    }
+
+    .checklist {
+      display: grid;
+      gap: 13px;
+      margin-top: 22px;
+    }
+
+    .check {
+      display: flex;
+      gap: 11px;
+      align-items: flex-start;
+      color: #dbeaff;
+      line-height: 1.55;
+      font-size: 14px;
+    }
+
+    .check b { color: var(--blue); }
+
+    .rules-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+    }
+
+    .rule {
+      padding: 22px;
+      border-radius: 18px;
+      border: 1px solid rgba(105,169,255,.18);
+      background: rgba(47,125,244,.08);
+    }
+
+    .rule strong {
+      display: block;
+      margin-bottom: 7px;
+      color: #ffffff;
+      font-size: 16px;
+    }
+
+    .rule p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .notice {
+      margin-top: 18px;
+      border: 1px solid rgba(105,169,255,.18);
+      background: rgba(47,125,244,.08);
+      color: #d9ecff;
+      border-radius: 16px;
+      padding: 17px 18px;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .cta {
+      padding: 34px;
+      border-radius: 28px;
+      border: 1px solid rgba(105,169,255,.20);
+      background:
+        radial-gradient(circle at 10% 20%, rgba(105,169,255,.12), transparent 25%),
+        radial-gradient(circle at 90% 90%, rgba(110,231,255,.08), transparent 24%),
+        var(--card-strong);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 30px;
+    }
+
+    .cta h2 { font-size: clamp(30px, 4vw, 46px); }
+    .cta p {
+      color: var(--muted);
+      line-height: 1.6;
+      max-width: 670px;
+      margin-bottom: 0;
+    }
+
+    footer {
+      padding: 34px 0 46px;
+      color: #829bb7;
+      font-size: 13px;
+    }
+
+    .footer-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      border-top: 1px solid var(--line);
+      padding-top: 26px;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translate(-50%, 20px);
+      background: #eafff0;
+      color: #03070c;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-weight: 900;
+      opacity: 0;
+      pointer-events: none;
+      transition: .25s ease;
+      z-index: 100;
+      box-shadow: var(--shadow), 0 0 0 1px rgba(105,169,255,.025);
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    @media (max-width: 920px) {
+      .nav-links { display: none; }
+      .hero { padding-top: 72px; }
+      .hero-grid,
+      .clan-panel { grid-template-columns: 1fr; }
+      .features { grid-template-columns: repeat(2, 1fr); }
+      .economy-strip { grid-template-columns: repeat(2, 1fr); }
+      .rules-grid { grid-template-columns: 1fr 1fr; }
+      .server-card { max-width: 620px; }
+    }
+
+    @media (max-width: 620px) {
+      .container { width: min(100% - 24px, 1180px); }
+      .features,
+      .rules-grid,
+      .economy-strip { grid-template-columns: 1fr; }
+      .hero-actions .button { width: 100%; }
+      .cta {
+        align-items: stretch;
+        flex-direction: column;
+      }
+      .cta .button { width: 100%; }
+      .server-card { padding: 14px; }
+      .mc-window { min-height: 360px; }
+      section { padding: 62px 0; }
+    }
+  
+    .status-card {
+      margin-top: 22px;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 16px;
+      padding: 18px;
+      border-radius: 18px;
+      border: 1px solid rgba(105,169,255,.20);
+      background: linear-gradient(135deg, rgba(47,125,244,.10), rgba(255,255,255,.025));
+      box-shadow: 0 18px 45px rgba(0,0,0,.24);
+    }
+
+    .status-dot {
+      width: 13px;
+      height: 13px;
+      border-radius: 999px;
+      background: #7f8fa6;
+      box-shadow: 0 0 0 7px rgba(127,143,166,.10);
+    }
+
+    .status-dot.online {
+      background: #68a9ff;
+      box-shadow: 0 0 0 7px rgba(104,169,255,.12), 0 0 20px rgba(104,169,255,.5);
+      animation: statusPulse 1.8s infinite;
+    }
+
+    .status-dot.offline {
+      background: #ffffff;
+      box-shadow: 0 0 0 7px rgba(255,255,255,.08);
+      opacity: .55;
+    }
+
+    @keyframes statusPulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(.82); opacity: .65; }
+    }
+
+    .status-main strong {
+      display: block;
+      font-size: 14px;
+      letter-spacing: .04em;
+    }
+
+    .status-main span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 3px;
+    }
+
+    .status-players {
+      text-align: right;
+    }
+
+    .status-players strong {
+      display: block;
+      color: #d9ecff;
+      font-size: 18px;
+    }
+
+    .status-players span {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .server-address-box {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      margin-top: 12px;
+      padding: 13px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.08);
+      background: #05090d;
+      align-items: center;
+    }
+
+    .server-address-box code {
+      color: #d9ecff;
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+
+    .copy-mini {
+      border: 0;
+      border-radius: 10px;
+      padding: 9px 12px;
+      cursor: pointer;
+      color: #05101b;
+      background: #8ec4ff;
+      font-weight: 900;
+    }
+
+    .brand-logo-img {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      object-fit: cover;
+      border: 1px solid rgba(255,255,255,.10);
+      box-shadow: 0 10px 28px rgba(47,125,244,.28);
+    }
+
+    .hero-logo {
+      width: 78px;
+      height: 78px;
+      border-radius: 20px;
+      object-fit: cover;
+      border: 1px solid rgba(255,255,255,.12);
+      box-shadow: 0 18px 45px rgba(47,125,244,.25);
+      margin-bottom: 18px;
+    }
+
+    @media (max-width: 620px) {
+      .status-card {
+        grid-template-columns: auto 1fr;
+      }
+      .status-players {
+        grid-column: 2;
+        text-align: left;
+      }
+      .server-address-box {
+        grid-template-columns: 1fr;
+      }
+    }
+
+  
+    .backup-grid {
+      display: grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .backup-card {
+      border: 1px solid rgba(105,169,255,.18);
+      background:
+        radial-gradient(circle at 10% 0%, rgba(47,125,244,.10), transparent 30%),
+        #081018;
+      border-radius: 22px;
+      padding: 26px;
+      box-shadow: 0 20px 55px rgba(0,0,0,.28);
+    }
+
+    .backup-points {
+      display: grid;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .backup-point {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 13px 14px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.025);
+      border: 1px solid rgba(255,255,255,.06);
+    }
+
+    .backup-point strong {
+      display: block;
+      color: white;
+      margin-bottom: 3px;
+    }
+
+    .backup-point span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .music-control {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 120;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 15px;
+      background: rgba(3, 9, 15, .92);
+      border: 1px solid rgba(105,169,255,.20);
+      backdrop-filter: blur(16px);
+      box-shadow: 0 16px 40px rgba(0,0,0,.38);
+      max-width: min(360px, calc(100vw - 36px));
+    }
+
+    .music-art {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #73b6ff, #2f7df4);
+      color: #02070c;
+      font-size: 18px;
+      font-weight: 950;
+      flex: 0 0 auto;
+    }
+
+    .music-info {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .music-info strong,
+    .music-info span {
+      display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .music-info strong {
+      font-size: 12px;
+      color: white;
+    }
+
+    .music-info span {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .music-button {
+      border: 0;
+      min-width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      cursor: pointer;
+      background: #dcecff;
+      color: #06101a;
+      font-weight: 950;
+    }
+
+    .yt-bg-player {
+      position: fixed;
+      width: 1px;
+      height: 1px;
+      left: -9999px;
+      bottom: -9999px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    @media (max-width: 800px) {
+      .backup-grid { grid-template-columns: 1fr; }
+    }
+
+  
+    .floating-tag,
+    .server-info,
+    .feature,
+    .rule,
+    .backup-card,
+    .status-card,
+    .music-control {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
+    }
+
+    .mc-window {
+      background:
+        linear-gradient(rgba(2,7,14,.10), rgba(2,7,14,.72)),
+        linear-gradient(
+          135deg,
+          #0d2a4d 0 25%,
+          #081b32 25% 50%,
+          #12375f 50% 75%,
+          #071827 75%
+        );
+      background-size: auto, 96px 96px;
+    }
+
+    .server-card {
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.018)),
+        #07111d;
+      border-color: rgba(105,169,255,.16);
+    }
+
+    .server-info {
+      background: rgba(2,8,14,.88);
+      border-color: rgba(105,169,255,.12);
+    }
+
+  
+    .server-brand-banner {
+      padding: 34px 0 10px;
+    }
+
+    .server-brand-inner {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 18px 22px;
+      border-radius: 22px;
+      border: 1px solid rgba(105,169,255,.18);
+      background:
+        linear-gradient(135deg, rgba(47,125,244,.12), rgba(255,255,255,.02)),
+        #050b12;
+      box-shadow: 0 18px 50px rgba(0,0,0,.30);
+    }
+
+    .server-brand-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 18px;
+      object-fit: cover;
+      border: 1px solid rgba(255,255,255,.10);
+      box-shadow: 0 12px 34px rgba(47,125,244,.25);
+      flex: 0 0 auto;
+    }
+
+    .server-brand-copy h1 {
+      font-size: clamp(24px, 4vw, 38px);
+      line-height: 1;
+      margin: 0 0 7px;
+      letter-spacing: -.035em;
+    }
+
+    .server-brand-copy p {
+      margin: 0;
+      color: #a9bfd8;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: .02em;
+    }
+
+    .server-brand-badges {
+      margin-left: auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .server-brand-badge {
+      padding: 8px 11px;
+      border-radius: 999px;
+      border: 1px solid rgba(105,169,255,.18);
+      background: rgba(47,125,244,.08);
+      color: #d9ecff;
+      font-size: 11px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 720px) {
+      .server-brand-inner {
+        align-items: flex-start;
+        flex-wrap: wrap;
+      }
+
+      .server-brand-badges {
+        width: 100%;
+        margin-left: 92px;
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .server-brand-icon {
+        width: 58px;
+        height: 58px;
+        border-radius: 15px;
+      }
+
+      .server-brand-badges {
+        margin-left: 0;
+      }
+    }
+
+  </style>
 </head>
+
 <body>
+  <nav>
+    <div class="container nav-wrap">
+      <a class="brand" href="#inicio" aria-label="Ethernals Bedrock">
+        <img class="brand-logo-img" src="ethernals-icon.png" alt="Ícone Ethernals Bedrock" />
+        <span>
+          Ethernals Bedrock
+          <small>Bedrock Only • Economia • PvP</small>
+        </span>
+      </a>
 
-    <!-- Hero Section -->
-    <header>
-        <div class="hero-badge">Em breve desenvolvedor de software</div>
-        <h1>Olá, eu sou o <span>Frosty7</span></h1>
-        <p>Desenvolvedor focado em criar experiências interativas no Roblox, automações inteligentes para o Discord e aplicações web modernas.</p>
-        
-        <div class="stats-banner">
-            🚀 Mais de <span>12M+</span> de Visitas Contribuídas
-        </div>
-    </header>
+      <div class="nav-links">
+        <a href="#sistemas">Sistemas</a>
+        <a href="#clans">Clãs</a>
+        <a href="#backups">Backups</a>
+        <a href="#regras">Regras</a>
+        <a href="#entrar">Entrar</a>
+      </div>
 
-    <!-- Seção de Tecnologias -->
-    <section id="tecnologias">
-        <h2>Tecnologias & Linguagens</h2>
-        <div class="tech-container">
-            <div class="tech-badge">Lua</div>
-            <div class="tech-badge">Luau</div>
-            <div class="tech-badge">Node.js</div>
-            <div class="tech-badge">Python</div>
-            <div class="tech-badge">HTML5</div>
-            <div class="tech-badge">CSS3</div>
+      <a class="button secondary" href="#entrar">Jogar agora</a>
+    </div>
+  </nav>
+
+  <section class="server-brand-banner" aria-label="Identidade do servidor">
+    <div class="container">
+      <div class="server-brand-inner">
+        <img class="server-brand-icon" src="ethernals-icon.png" alt="Ícone Ethernals Bedrock" />
+        <div class="server-brand-copy">
+          <h1>Ethernals Bedrock</h1>
+          <p>Survival • Economia • PvP • Clãs</p>
         </div>
+        <div class="server-brand-badges">
+          <span class="server-brand-badge">🎮 Bedrock Only</span>
+          <span class="server-brand-badge">🛡️ Survival</span>
+          <span class="server-brand-badge">⚔️ PvP</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <main>
+    <section class="hero" id="inicio">
+      <div class="container hero-grid">
+        <div>
+          <img class="hero-logo" src="ethernals-icon.png" alt="Ethernals Bedrock" />
+          <div class="pill"><span class="pulse"></span> 🎮 Exclusivo para Minecraft Bedrock</div>
+          <h1>Construa. Enriqueça. <span>Domine.</span></h1>
+          <p class="hero-copy">
+            O <strong>Ethernals Bedrock</strong> é um servidor <strong>exclusivo para Minecraft Bedrock</strong>, focado em economia,
+            PvP e progressão. Monte sua base, venda recursos, crie seu clã e dispute espaço
+            entre os jogadores mais ricos do servidor.
+          </p>
+
+          <div class="hero-actions">
+            <a class="button primary" href="#entrar">⚔ Entrar no servidor</a>
+            <a class="button secondary" href="#sistemas">Ver sistemas</a>
+          </div>
+
+          <div class="mini-stats">
+            <div class="mini-stat">
+              <strong>2.500</strong>
+              <span>moedas a cada 15 min</span>
+            </div>
+            <div class="mini-stat">
+              <strong>150K</strong>
+              <span>para criar um clã</span>
+            </div>
+            <div class="mini-stat">
+              <strong>30 dias</strong>
+              <span>iniciais sem PvP</span>
+            </div>
+            <div class="mini-stat">
+              <strong>Bedrock</strong>
+              <span>Java não é suportado</span>
+            </div>
+          </div>
+
+          <div class="status-card" aria-live="polite">
+            <span class="status-dot" id="server-status-dot"></span>
+            <div class="status-main">
+              <strong id="server-status-text">VERIFICANDO SERVIDOR...</strong>
+              <span id="server-status-detail">Ethernals.aternos.me:12701</span>
+            </div>
+            <div class="status-players">
+              <strong id="server-player-count">— / —</strong>
+              <span>jogadores</span>
+              <button class="copy-mini" id="refresh-server-status" type="button" style="margin-top:8px">Atualizar</button>
+            </div>
+          </div>
+
+          <div class="server-address-box">
+            <code>Ethernals.aternos.me:12701</code>
+            <button class="copy-mini" id="copy-server-address" type="button">Copiar</button>
+          </div>
+        </div>
+
+        <div class="server-card">
+          <div class="mc-window">
+            <div class="floating-tag">
+              <strong>[FRO7] Frosty Du7</strong>
+              <span>🪙 185.500</span>
+            </div>
+
+            <div class="server-info">
+              <div class="server-info-row">
+                <span>Servidor</span>
+                <strong>Ethernals Bedrock</strong>
+              </div>
+              <div class="server-info-row">
+                <span>Modo</span>
+                <strong>Survival</strong>
+              </div>
+              <div class="server-info-row">
+                <span>Foco</span>
+                <strong>Economia + PvP</strong>
+              </div>
+              <div class="server-info-row">
+                <span>Plataforma</span>
+                <strong>🎮 Minecraft Bedrock</strong>
+              </div>
+              <div class="server-info-row">
+                <span>Java Edition</span>
+                <strong style="color:#9fd0ff">✖ Não suportado</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
 
-    <!-- Seção de Projetos -->
-    <section id="projetos">
-        <h2>Meus Projetos & Atuações</h2>
-        <div class="projects-grid">
-            
-            <!-- Drive Brasil -->
-            <div class="project-card">
-                <div>
-                    <h3>Drive Brasil</h3>
-                    <div class="project-visits">⭐ 12M+ Visitas</div>
-                    <p>Grande projeto no Roblox focado em simulação de condução e ambiente brasileiro. Responsável por mecânicas principais e otimização de sistemas.</p>
-                </div>
-                <a href="https://www.roblox.com/share?code=ce2c933129b1824eacd09b824f7fb8d0&type=ExperienceDetails&stamp=1783564514385" target="_blank" class="btn-project">Jogar Experiência</a>
-            </div>
-
-            <!-- Dichava SP -->
-            <div class="project-card">
-                <div>
-                    <h3>Dichava SP</h3>
-                    <div class="project-visits">⭐ 150k+ Visitas</div>
-                    <p>Experiência imersiva no cenário de São Paulo. Desenvolvimento focado na jogabilidade, integração de assets e scripts dinâmicos em Luau.</p>
-                </div>
-                <a href="https://www.roblox.com/share?code=4e9e07d958dd3a49b4c57fcf5fc34779&type=ExperienceDetails&stamp=1783564482607" target="_blank" class="btn-project">Jogar Experiência</a>
-            </div>
-
-            <!-- Lunar Studio Games -->
-            <div class="project-card">
-                <div>
-                    <h3>Lunar Studio Games</h3>
-                    <div class="project-visits">👑 Fundador / Owner</div>
-                    <p>Estúdio focado na criação e gerenciamento de experiências marcantes para a plataforma Roblox, unindo desenvolvedores e gerando inovação.</p>
-                </div>
-                <a href="https://www.roblox.com/share/g/385960543" target="_blank" class="btn-project">Ver Grupo</a>
-            </div>
-
-            <!-- Outras Atuações -->
-            <div class="project-card">
-                <div>
-                    <h3>Bots para Discord & Web</h3>
-                    <div class="project-visits">💻 Automação & Web Dev</div>
-                    <p>Criação de bots inteligentes e robustos com Node.js e Python para gestão de comunidades, além do desenvolvimento de landing pages e sites responsivos.</p>
-                </div>
-                <span style="color: var(--texto-cinza); font-style: italic; font-size: 0.9rem;">Portfólio Ativo</span>
-            </div>
-
+    <section id="sistemas">
+      <div class="container">
+        <div class="section-head">
+          <div class="eyebrow">Por que jogar aqui?</div>
+          <h2>Sistemas feitos para dar objetivo ao survival.</h2>
+          <p>
+            Não é só entrar, minerar e sair. No Ethernals, cada recurso tem valor,
+            cada decisão afeta sua economia e seu clã pode mudar completamente sua experiência.
+          </p>
         </div>
+
+        <div class="features">
+          <article class="feature">
+            <div class="icon">🛒</div>
+            <h3>Loja do servidor</h3>
+            <p>
+              Compre blocos, armaduras, ferramentas, itens e comidas usando a moeda do servidor.
+              Ideal para construção de base, progressão e preparação para PvP.
+            </p>
+          </article>
+
+          <article class="feature">
+            <div class="icon">⛏️</div>
+            <h3>Venda de minérios</h3>
+            <p>
+              Transforme mineração em dinheiro. Venda recursos refinados e outros minérios
+              para aumentar seu saldo, investir na sua progressão e subir no ranking.
+            </p>
+          </article>
+
+          <article class="feature">
+            <div class="icon">🏆</div>
+            <h3>Ranking de riqueza</h3>
+            <p>
+              Consulte o ranking e veja quem domina a economia. Quanto maior seu patrimônio,
+              mais perto você fica do topo do servidor.
+            </p>
+          </article>
+
+          <article class="feature">
+            <div class="icon">🎁</div>
+            <h3>Recompensa por tempo</h3>
+            <p>
+              Jogando normalmente, você recebe <strong>2.500 moedas a cada 15 minutos online</strong>.
+              Seu tempo no servidor também vira progressão.
+            </p>
+          </article>
+
+          <article class="feature">
+            <div class="icon">🧭</div>
+            <h3>TPA com controle</h3>
+            <p>
+              Envie solicitações de teleporte para outros jogadores e escolha se deseja receber
+              pedidos. Você mantém o controle pelas configurações de TPA.
+            </p>
+          </article>
+
+          <article class="feature highlight">
+            <div class="icon">🛡️</div>
+            <h3>30 dias iniciais de paz</h3>
+            <p>
+              Nos primeiros 30 dias do servidor, o PvP permanece desativado para dar tempo
+              de construir bases, organizar clãs e preparar a economia antes da guerra começar.
+            </p>
+          </article>
+        </div>
+      </div>
     </section>
 
-    <!-- Rodapé -->
-    <footer>
-        <p>&copy; 2026 Frosty7 Portifolio. Tudo pronto para o próximo nível.</p>
-    </footer>
+    <section id="clans">
+      <div class="container clan-panel">
+        <div class="glass tag-demo">
+          <div>
+            <div class="player">
+              <span class="tag">[FRO7]</span> Frosty Du7
+            </div>
+            <span class="money">🪙 185.500</span>
+          </div>
+        </div>
+
+        <div class="glass">
+          <div class="eyebrow">Sistema de clãs</div>
+          <h2>Monte seu time.</h2>
+          <p style="color:var(--muted);line-height:1.7">
+            Criar um clã custa <strong style="color:#d9ecff">🪙 150.000</strong>.
+            Escolha uma TAG de 4 caracteres, personalize sua cor e administre seus membros.
+          </p>
+
+          <div class="checklist">
+            <div class="check"><b>🎨</b><span>Escolha a <strong>TAG</strong> e a cor do seu clã.</span></div>
+            <div class="check"><b>👥</b><span>Convide e expulse membros pelo painel.</span></div>
+            <div class="check"><b>🗑️</b><span>Exclua o clã quando quiser.</span></div>
+            <div class="check"><b>🛡️</b><span>Membros do mesmo clã <strong>não causam dano entre si</strong>.</span></div>
+            <div class="check"><b>💰</b><span>Seu clã e seu dinheiro aparecem acima da sua cabeça.</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <section id="bedrock-only">
+      <div class="container">
+        <div class="glass" style="display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:center;border-color:rgba(105,169,255,.25);background:linear-gradient(135deg,rgba(47,125,244,.12),rgba(110,231,255,.05)),var(--card);">
+          <div style="width:72px;height:72px;border-radius:20px;display:grid;place-items:center;font-size:34px;background:rgba(105,169,255,.12);border:1px solid rgba(105,169,255,.18)">🎮</div>
+          <div>
+            <div class="eyebrow">Plataforma</div>
+            <h2 style="font-size:clamp(28px,4vw,42px);margin-bottom:10px">Feito para Minecraft Bedrock.</h2>
+            <p style="color:var(--muted);line-height:1.7;margin:0">
+              O Ethernals Bedrock é <strong style="color:white">exclusivo para jogadores da edição Bedrock</strong>.
+              Não oferecemos suporte para Minecraft Java Edition.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="seguranca">
+      <div class="container">
+        <div class="section-head">
+          <div class="eyebrow">Fair play</div>
+          <h2>Economia forte precisa de proteção.</h2>
+          <p>
+            Exploits que prejudiquem a economia ou deem vantagem injusta são proibidos.
+            O servidor possui mecanismos próprios de detecção e a equipe pode aplicar punições permanentes.
+          </p>
+        </div>
+
+        <div class="feature" style="min-height:auto">
+          <div class="icon">🚨</div>
+          <h3>Anti-duplicação</h3>
+          <p>
+            Métodos de duplicação e abuso de falhas do Bedrock são proibidos. Sistemas de detecção
+            monitoram comportamentos anormais ligados a itens e mecanismos. Tentativas confirmadas podem
+            resultar em banimento permanente e remoção da estrutura usada no abuso.
+          </p>
+        </div>
+
+        <div class="notice" style="background:rgba(47,125,244,.08);border-color:rgba(105,169,255,.18);color:#d9ecff;">
+          Por segurança, os detalhes técnicos da detecção não são publicados. Isso evita facilitar tentativas de burlar o sistema.
+        </div>
+      </div>
+    </section>
+
+
+    <section id="backups">
+      <div class="container">
+        <div class="section-head">
+          <div class="eyebrow">🗄️ Proteção de dados</div>
+          <h2>Backups para proteger o progresso.</h2>
+          <p>
+            Um servidor survival pode representar dezenas ou centenas de horas de construção,
+            mineração e evolução. Por isso, o Ethernals Bedrock utiliza backups como camada de
+            segurança contra corrupção do mundo, falhas inesperadas e perda acidental de dados.
+          </p>
+        </div>
+
+        <div class="backup-grid">
+          <div class="backup-card">
+            <div class="icon">💾</div>
+            <h3 style="font-size:24px;margin:0 0 10px">Recuperação do mundo</h3>
+            <p style="color:var(--muted);line-height:1.7;margin:0">
+              Caso o mundo ou os arquivos do servidor apresentem corrupção, uma cópia de segurança
+              pode ser utilizada para recuperar o servidor e reduzir ao máximo a perda de progresso.
+            </p>
+
+            <div class="backup-points">
+              <div class="backup-point">
+                <div>🧱</div>
+                <div>
+                  <strong>Construções protegidas</strong>
+                  <span>Backups ajudam a preservar bases, cidades, farms e outras construções importantes.</span>
+                </div>
+              </div>
+
+              <div class="backup-point">
+                <div>💰</div>
+                <div>
+                  <strong>Economia e progresso</strong>
+                  <span>Os dados do servidor podem ser restaurados junto com o mundo em caso de falhas graves.</span>
+                </div>
+              </div>
+
+              <div class="backup-point">
+                <div>🔄</div>
+                <div>
+                  <strong>Plano de recuperação</strong>
+                  <span>Se ocorrer corrupção, a prioridade é restaurar a cópia segura mais recente disponível.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="backup-card" style="display:flex;flex-direction:column;justify-content:center">
+            <div class="icon">🛡️</div>
+            <h3 style="font-size:24px;margin:0 0 10px">Seu tempo tem valor.</h3>
+            <p style="color:var(--muted);line-height:1.75;margin:0">
+              Nenhum sistema consegue eliminar completamente o risco de perda de dados, mas manter
+              backups reduz drasticamente o impacto de problemas técnicos. O objetivo é que uma falha
+              no servidor não apague todo o progresso da comunidade.
+            </p>
+            <div class="notice" style="margin-top:18px">
+              Em uma restauração pode haver perda do progresso feito depois do backup recuperado.
+              Por isso, backups frequentes são importantes.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="regras">
+      <div class="container">
+        <div class="section-head">
+          <div class="eyebrow">Regras</div>
+          <h2>Competição sim. Trapaça e abuso, não.</h2>
+          <p>
+            Entrar no servidor significa concordar com estas regras. Violações podem gerar punições de acordo com a gravidade.
+          </p>
+        </div>
+
+        <div class="rules-grid">
+          <div class="rule" style="background:rgba(47,125,244,.07);border-color:rgba(105,169,255,.16);">
+            <strong>01 — 🚫 Sem duplicação</strong>
+            <p>Não use glitches, exploits ou qualquer método para duplicar itens ou moeda.</p>
+          </div>
+
+          <div class="rule" style="background:rgba(47,125,244,.07);border-color:rgba(105,169,255,.16);">
+            <strong>02 — 👁️ Sem X-Ray</strong>
+            <p>Resource packs, clientes ou ferramentas que revelem minérios através de blocos são proibidos.</p>
+          </div>
+
+          <div class="rule" style="background:rgba(47,125,244,.07);border-color:rgba(105,169,255,.16);">
+            <strong>03 — 🤝 Sem racismo ou discriminação</strong>
+            <p>Racismo, homofobia, xenofobia, discurso de ódio e ataques discriminatórios não serão tolerados.</p>
+          </div>
+
+          <div class="rule" style="background:rgba(47,125,244,.07);border-color:rgba(105,169,255,.16);">
+            <strong>04 — 🧨 Sem exploits</strong>
+            <p>Abusar de bugs do Minecraft ou de sistemas do servidor para obter vantagem é proibido.</p>
+          </div>
+
+          <div class="rule" style="background:rgba(47,125,244,.07);border-color:rgba(105,169,255,.16);">
+            <strong>05 — 🛡️ Respeite a equipe</strong>
+            <p>Tentativas de enganar a moderação, fraudar provas ou atrapalhar investigações podem agravar punições.</p>
+          </div>
+
+          <div class="rule" style="background:rgba(47,125,244,.07);border-color:rgba(105,169,255,.16);">
+            <strong>06 — ⚔️ PvP dentro das regras</strong>
+            <p>Quando o PvP estiver ativo, lutar faz parte do servidor. Trapaças e clientes modificados continuam proibidos.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="entrar">
+      <div class="container">
+        <div class="cta">
+          <div>
+            <div class="eyebrow">Ethernals Bedrock</div>
+            <h2>Seu survival pode começar agora.</h2>
+            <p>
+              Entre pelo Minecraft Bedrock, faça sua primeira mineração, monte sua economia e prepare seu clã antes do PvP começar.
+              Use o endereço abaixo ou o botão de adicionar servidor para entrar pelo Minecraft Bedrock.
+            </p>
+          </div>
+
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="button primary" id="copy-ip" data-ip="Ethernals.aternos.me:12701">📋 Copiar IP</button>
+            <a class="button secondary" href="https://add.aternos.org/Ethernals" target="_blank" rel="noopener">➕ Adicionar servidor</a>
+            <a class="button secondary" href="#" id="discord-link">Discord em breve</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-row">
+      <div>© 2026 Ethernals Bedrock. Servidor independente da Mojang/Microsoft.</div>
+      <div>Bedrock Only • Survival • Economia • PvP • Clãs</div>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast">IP copiado!</div>
+
+  <script src="https://www.youtube.com/iframe_api">
+    let backgroundMusicPlayer = null;
+    let musicReady = false;
+    let musicPlaying = false;
+    let userActivatedMusic = false;
+
+    const musicToggle = document.getElementById('music-toggle');
+    const musicStatus = document.getElementById('music-status');
+
+    window.onYouTubeIframeAPIReady = function () {
+      backgroundMusicPlayer = new YT.Player('yt-background-player', {
+        height: '1',
+        width: '1',
+        videoId: 'NpU_aN54eJA',
+        playerVars: {
+          autoplay: 0,
+          controls: 0,
+          disablekb: 1,
+          fs: 0,
+          modestbranding: 1,
+          playsinline: 1,
+          rel: 0,
+          loop: 1,
+          playlist: 'NpU_aN54eJA'
+        },
+        events: {
+          onReady: function () {
+            musicReady = true;
+            backgroundMusicPlayer.setVolume(28);
+          },
+          onStateChange: function (event) {
+            if (event.data === YT.PlayerState.PLAYING) {
+              musicPlaying = true;
+              musicToggle.textContent = '❚❚';
+              musicStatus.textContent = 'Tocando em segundo plano';
+            } else if (event.data === YT.PlayerState.PAUSED) {
+              musicPlaying = false;
+              musicToggle.textContent = '▶';
+              musicStatus.textContent = 'Música pausada';
+            }
+          }
+        }
+      });
+    };
+
+    function playBackgroundMusic() {
+      if (!musicReady || !backgroundMusicPlayer) return;
+      userActivatedMusic = true;
+      backgroundMusicPlayer.playVideo();
+    }
+
+    function pauseBackgroundMusic() {
+      if (!musicReady || !backgroundMusicPlayer) return;
+      backgroundMusicPlayer.pauseVideo();
+    }
+
+    musicToggle?.addEventListener('click', () => {
+      if (!musicReady) {
+        musicStatus.textContent = 'Player carregando...';
+        return;
+      }
+
+      if (musicPlaying) pauseBackgroundMusic();
+      else playBackgroundMusic();
+    });
+
+    function startMusicOnFirstInteraction() {
+      if (userActivatedMusic || !musicReady) return;
+      playBackgroundMusic();
+    }
+
+    document.addEventListener('click', startMusicOnFirstInteraction, { once: true });
+    document.addEventListener('touchstart', startMusicOnFirstInteraction, { once: true });
+
+  </script>
+  <script>
+    const copyButton = document.getElementById('copy-ip');
+    const toast = document.getElementById('toast');
+
+    copyButton.addEventListener('click', async () => {
+      const ip = copyButton.dataset.ip;
+
+      if (ip === 'IP EM BREVE') {
+        toast.textContent = 'Servidor: ' + ip;
+      } else {
+        try {
+          await navigator.clipboard.writeText(ip);
+          toast.textContent = 'IP copiado: ' + ip;
+        } catch {
+          toast.textContent = 'IP: ' + ip;
+        }
+      }
+
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2600);
+    });
+
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+      link.addEventListener('click', event => {
+        const id = link.getAttribute('href');
+        if (id === '#') return;
+        const target = document.querySelector(id);
+        if (!target) return;
+        event.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+  
+    const SERVER_ADDRESS = 'Ethernals.aternos.me:12701';
+
+    const STATUS_PROVIDERS = [
+      {
+        name: 'SnowDev',
+        url: 'https://mcstatus.snowdev.com.br/api/query/v3/' + encodeURIComponent(SERVER_ADDRESS),
+        parse(data) {
+          return {
+            online: Boolean(data?.online),
+            onlinePlayers: data?.players?.online ?? data?.players?.now ?? data?.onlinePlayers ?? 0,
+            maxPlayers: data?.players?.max ?? data?.maxPlayers ?? '—',
+            motd: data?.motd?.clean ?? data?.motd ?? ''
+          };
+        }
+      },
+      {
+        name: 'mcstatus.io',
+        url: 'https://api.mcstatus.io/v2/status/bedrock/' + encodeURIComponent(SERVER_ADDRESS) + '?timeout=5',
+        parse(data) {
+          return {
+            online: Boolean(data?.online),
+            onlinePlayers: data?.players?.online ?? 0,
+            maxPlayers: data?.players?.max ?? '—',
+            motd: data?.motd?.clean ?? ''
+          };
+        }
+      },
+      {
+        name: 'mcsrvstat.us',
+        url: 'https://api.mcsrvstat.us/bedrock/3/' + encodeURIComponent(SERVER_ADDRESS),
+        parse(data) {
+          return {
+            online: Boolean(data?.online),
+            onlinePlayers: data?.players?.online ?? 0,
+            maxPlayers: data?.players?.max ?? '—',
+            motd: Array.isArray(data?.motd?.clean)
+              ? data.motd.clean.join(' ')
+              : (data?.motd?.clean ?? '')
+          };
+        }
+      }
+    ];
+
+    const statusDot = document.getElementById('server-status-dot');
+    const statusText = document.getElementById('server-status-text');
+    const statusDetail = document.getElementById('server-status-detail');
+    const playerCount = document.getElementById('server-player-count');
+    const copyAddressButton = document.getElementById('copy-server-address');
+    const refreshStatusButton = document.getElementById('refresh-server-status');
+
+
+    function normalizeStatusText(value) {
+      if (Array.isArray(value)) return value.join(' ').replace(/\s+/g, ' ').trim();
+      if (value && typeof value === 'object') {
+        if (typeof value.clean === 'string') return value.clean.replace(/\s+/g, ' ').trim();
+        if (Array.isArray(value.clean)) return value.clean.join(' ').replace(/\s+/g, ' ').trim();
+        return '';
+      }
+      return String(value || '').replace(/\s+/g, ' ').trim();
+    }
+
+    function motdSaysOffline(motd) {
+      const text = normalizeStatusText(motd)
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '');
+
+      return text.includes('offline aternos') ||
+             text.includes('aternos offline') ||
+             text.includes('server is offline') ||
+             text.includes('server offline') ||
+             text.includes('servidor offline') ||
+             text.includes('servidor esta offline') ||
+             text.includes('servidor desligado');
+    }
+
+    function setServerOnline(result, providerName) {
+      statusDot.className = 'status-dot online';
+      statusText.textContent = 'SERVIDOR ONLINE';
+
+      const motd = normalizeStatusText(result?.motd);
+      statusDetail.textContent = motd
+        ? motd
+        : `Ethernals Bedrock • ${SERVER_ADDRESS}`;
+
+      const online = result?.onlinePlayers ?? 0;
+      const max = result?.maxPlayers ?? '—';
+      playerCount.textContent = `${online} / ${max}`;
+      statusText.title = `Status confirmado por ${providerName}`;
+    }
+
+    function setServerOffline(detail = SERVER_ADDRESS) {
+      statusDot.className = 'status-dot offline';
+      statusText.textContent = 'SERVIDOR OFFLINE';
+      statusDetail.textContent = detail;
+      playerCount.textContent = '0 / —';
+      statusText.title = 'Nenhuma fonte confirmou o servidor como online';
+    }
+
+    async function queryProvider(provider) {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 8000);
+
+      try {
+        const response = await fetch(provider.url, {
+          cache: 'no-store',
+          signal: controller.signal,
+          headers: { 'Accept': 'application/json' }
+        });
+
+        if (!response.ok) {
+          throw new Error(`${provider.name}: HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+        return { provider: provider.name, ...provider.parse(data) };
+      } finally {
+        clearTimeout(timeout);
+      }
+    }
+
+    async function refreshServerStatus() {
+      statusDot.className = 'status-dot';
+      statusText.textContent = 'VERIFICANDO SERVIDOR...';
+      statusDetail.textContent = SERVER_ADDRESS;
+      playerCount.textContent = '— / —';
+
+      const results = await Promise.allSettled(
+        STATUS_PROVIDERS.map(provider => queryProvider(provider))
+      );
+
+      const successful = results
+        .filter(result => result.status === 'fulfilled')
+        .map(result => result.value);
+
+      const onlineResult = successful.find(result => result.online === true && !motdSaysOffline(result?.motd));
+
+      if (onlineResult) {
+        setServerOnline(onlineResult, onlineResult.provider);
+        return;
+      }
+
+      const aternosOffline = successful.find(result => motdSaysOffline(result?.motd));
+      if (aternosOffline) {
+        setServerOffline('Servidor desligado no Aternos');
+        return;
+      }
+
+      if (successful.length > 0) {
+        setServerOffline();
+        return;
+      }
+
+      statusDot.className = 'status-dot';
+      statusText.textContent = 'STATUS INDISPONÍVEL';
+      statusDetail.textContent = 'As fontes de status não responderam agora';
+      playerCount.textContent = '— / —';
+    }
+
+    copyAddressButton?.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(SERVER_ADDRESS);
+        toast.textContent = 'Servidor copiado: ' + SERVER_ADDRESS;
+      } catch {
+        toast.textContent = SERVER_ADDRESS;
+      }
+
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2600);
+    });
+
+    refreshStatusButton?.addEventListener('click', refreshServerStatus);
+
+    refreshServerStatus();
+    setInterval(refreshServerStatus, 30000);
+
+  </script>
+
+  <div class="yt-bg-player">
+    <div id="yt-background-player"></div>
+  </div>
+
+  <div class="music-control" id="music-control">
+    <div class="music-art">♫</div>
+    <div class="music-info">
+      <strong>Jerk — Oliver Tree</strong>
+      <span id="music-status">Clique para ativar a música</span>
+    </div>
+    <button class="music-button" id="music-toggle" type="button" aria-label="Tocar ou pausar música">▶</button>
+  </div>
 
 </body>
 </html>
