@@ -921,70 +921,7 @@
     }
 
 
-    .enter-overlay.hidden {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-    }
-
-    .enter-card {
-      width: min(520px, 100%);
-      text-align: center;
-      padding: 34px;
-      border-radius: 28px;
-      background:
-        linear-gradient(145deg, rgba(47,125,244,.12), rgba(255,255,255,.025)),
-        #07111d;
-      border: 1px solid rgba(105,169,255,.22);
-      box-shadow: 0 30px 90px rgba(0,0,0,.55);
-    }
-
-    .enter-card img {
-      width: 104px;
-      height: 104px;
-      object-fit: cover;
-      border-radius: 24px;
-      border: 1px solid rgba(255,255,255,.12);
-      box-shadow: 0 18px 48px rgba(47,125,244,.28);
-      margin-bottom: 20px;
-    }
-
-    .enter-card h2 {
-      margin: 0 0 10px;
-      font-size: clamp(30px, 6vw, 48px);
-    }
-
-    .enter-card p {
-      margin: 0 auto 24px;
-      max-width: 430px;
-      color: var(--muted);
-      line-height: 1.65;
-    }
-
-    .enter-site-button {
-      width: 100%;
-      min-height: 54px;
-      border: 0;
-      border-radius: 15px;
-      cursor: pointer;
-      background: linear-gradient(135deg, #76b8ff, #2f7df4);
-      color: #02070c;
-      font-weight: 950;
-      font-size: 15px;
-      box-shadow: 0 16px 40px rgba(47,125,244,.25);
-    }
-
-    .enter-note {
-      display: block;
-      margin-top: 12px;
-      color: #829bb7;
-      font-size: 11px;
-    }
-
-
     @media (max-width: 560px) {
-
-      .enter-card { padding: 26px 20px; }
     }
 
   </style>
@@ -1404,263 +1341,116 @@
   </footer>
 
   <div class="toast" id="toast">IP copiado!</div>
+
 <script>
-    const copyButton = document.getElementById('copy-ip');
-    const toast = document.getElementById('toast');
+  const SERVER_ADDRESS = 'Ethernals.aternos.me:12701';
 
-    copyButton.addEventListener('click', async () => {
-      const ip = copyButton.dataset.ip;
+  const copyButton = document.getElementById('copy-ip');
+  const copyAddressButton = document.getElementById('copy-server-address');
+  const refreshStatusButton = document.getElementById('refresh-server-status');
+  const toast = document.getElementById('toast');
 
-      if (ip === 'IP EM BREVE') {
-        toast.textContent = 'Servidor: ' + ip;
-      } else {
-        try {
-          await navigator.clipboard.writeText(ip);
-          toast.textContent = 'IP copiado: ' + ip;
-        } catch {
-          toast.textContent = 'IP: ' + ip;
-        }
-      }
+  const statusDot = document.getElementById('server-status-dot');
+  const statusText = document.getElementById('server-status-text');
+  const statusDetail = document.getElementById('server-status-detail');
+  const playerCount = document.getElementById('server-player-count');
 
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 2600);
+  function showToast(message) {
+    if (!toast) return;
+    toast.textContent = message;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2600);
+  }
+
+  async function copyText(text) {
+    try {
+      await navigator.clipboard.writeText(text);
+      showToast('Copiado: ' + text);
+    } catch {
+      showToast(text);
+    }
+  }
+
+  copyButton?.addEventListener('click', () => {
+    copyText(copyButton.dataset.ip || SERVER_ADDRESS);
+  });
+
+  copyAddressButton?.addEventListener('click', () => {
+    copyText(SERVER_ADDRESS);
+  });
+
+  document.querySelectorAll('a[href^="#"]').forEach(link => {
+    link.addEventListener('click', event => {
+      const id = link.getAttribute('href');
+      if (!id || id === '#') return;
+      const target = document.querySelector(id);
+      if (!target) return;
+      event.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
+  });
 
-    document.querySelectorAll('a[href^="#"]').forEach(link => {
-      link.addEventListener('click', event => {
-        const id = link.getAttribute('href');
-        if (id === '#') return;
-        const target = document.querySelector(id);
-        if (!target) return;
-        event.preventDefault();
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  function setChecking() {
+    if (!statusDot || !statusText || !statusDetail || !playerCount) return;
+    statusDot.className = 'status-dot';
+    statusText.textContent = 'VERIFICANDO SERVIDOR...';
+    statusDetail.textContent = SERVER_ADDRESS;
+    playerCount.textContent = '— / —';
+  }
+
+  function setOnline(data) {
+    statusDot.className = 'status-dot online';
+    statusText.textContent = 'SERVIDOR ONLINE';
+    statusDetail.textContent = data.motd || 'Ethernals Bedrock • Minecraft Bedrock';
+    playerCount.textContent = `${data.playersOnline ?? 0} / ${data.playersMax ?? '—'}`;
+  }
+
+  function setOffline(detail = 'Servidor desligado no Aternos') {
+    statusDot.className = 'status-dot offline';
+    statusText.textContent = 'SERVIDOR OFFLINE';
+    statusDetail.textContent = detail;
+    playerCount.textContent = '0 / —';
+  }
+
+  function setUnavailable() {
+    statusDot.className = 'status-dot';
+    statusText.textContent = 'STATUS INDISPONÍVEL';
+    statusDetail.textContent = 'Não foi possível consultar agora';
+    playerCount.textContent = '— / —';
+  }
+
+  async function refreshServerStatus() {
+    setChecking();
+
+    try {
+      const response = await fetch('/api/status?t=' + Date.now(), {
+        cache: 'no-store',
+        headers: { 'Accept': 'application/json' }
       });
-    });
-  
-    const SERVER_ADDRESS = 'Ethernals.aternos.me:12701';
 
-    const STATUS_PROVIDERS = [
-      {
-        name: 'SnowDev',
-        url: 'https://mcstatus.snowdev.com.br/api/query/v3/' + encodeURIComponent(SERVER_ADDRESS),
-        parse(data) {
-          return {
-            online: Boolean(data?.online),
-            onlinePlayers: data?.players?.online ?? data?.players?.now ?? data?.onlinePlayers ?? 0,
-            maxPlayers: data?.players?.max ?? data?.maxPlayers ?? '—',
-            motd: data?.motd?.clean ?? data?.motd ?? ''
-          };
-        }
-      },
-      {
-        name: 'mcstatus.io',
-        url: 'https://api.mcstatus.io/v2/status/bedrock/' + encodeURIComponent(SERVER_ADDRESS) + '?timeout=5',
-        parse(data) {
-          return {
-            online: Boolean(data?.online),
-            onlinePlayers: data?.players?.online ?? 0,
-            maxPlayers: data?.players?.max ?? '—',
-            motd: data?.motd?.clean ?? ''
-          };
-        }
-      },
-      {
-        name: 'mcsrvstat.us',
-        url: 'https://api.mcsrvstat.us/bedrock/3/' + encodeURIComponent(SERVER_ADDRESS),
-        parse(data) {
-          return {
-            online: Boolean(data?.online),
-            onlinePlayers: data?.players?.online ?? 0,
-            maxPlayers: data?.players?.max ?? '—',
-            motd: Array.isArray(data?.motd?.clean)
-              ? data.motd.clean.join(' ')
-              : (data?.motd?.clean ?? '')
-          };
-        }
-      }
-    ];
-
-    const statusDot = document.getElementById('server-status-dot');
-    const statusText = document.getElementById('server-status-text');
-    const statusDetail = document.getElementById('server-status-detail');
-    const playerCount = document.getElementById('server-player-count');
-    const copyAddressButton = document.getElementById('copy-server-address');
-    const refreshStatusButton = document.getElementById('refresh-server-status');
-
-
-    function normalizeStatusText(value) {
-      if (Array.isArray(value)) return value.join(' ').replace(/\s+/g, ' ').trim();
-      if (value && typeof value === 'object') {
-        if (typeof value.clean === 'string') return value.clean.replace(/\s+/g, ' ').trim();
-        if (Array.isArray(value.clean)) return value.clean.join(' ').replace(/\s+/g, ' ').trim();
-        return '';
-      }
-      return String(value || '').replace(/\s+/g, ' ').trim();
-    }
-
-    function motdSaysOffline(motd) {
-      const text = normalizeStatusText(motd)
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '');
-
-      return text.includes('offline aternos') ||
-             text.includes('aternos offline') ||
-             text.includes('server is offline') ||
-             text.includes('server offline') ||
-             text.includes('servidor offline') ||
-             text.includes('servidor esta offline') ||
-             text.includes('servidor desligado');
-    }
-
-    function setServerOnline(result, providerName) {
-      statusDot.className = 'status-dot online';
-      statusText.textContent = 'SERVIDOR ONLINE';
-
-      const motd = normalizeStatusText(result?.motd);
-      statusDetail.textContent = motd
-        ? motd
-        : `Ethernals Bedrock • ${SERVER_ADDRESS}`;
-
-      const online = result?.onlinePlayers ?? 0;
-      const max = result?.maxPlayers ?? '—';
-      playerCount.textContent = `${online} / ${max}`;
-      statusText.title = `Status confirmado por ${providerName}`;
-    }
-
-    function setServerOffline(detail = SERVER_ADDRESS) {
-      statusDot.className = 'status-dot offline';
-      statusText.textContent = 'SERVIDOR OFFLINE';
-      statusDetail.textContent = detail;
-      playerCount.textContent = '0 / —';
-      statusText.title = 'Nenhuma fonte confirmou o servidor como online';
-    }
-
-    async function queryProvider(provider) {
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 8000);
-
-      try {
-        const response = await fetch(provider.url, {
-          cache: 'no-store',
-          signal: controller.signal,
-          headers: { 'Accept': 'application/json' }
-        });
-
-        if (!response.ok) {
-          throw new Error(`${provider.name}: HTTP ${response.status}`);
-        }
-
-        const data = await response.json();
-        return { provider: provider.name, ...provider.parse(data) };
-      } finally {
-        clearTimeout(timeout);
-      }
-    }
-
-    async function refreshServerStatus() {
-      statusDot.className = 'status-dot';
-      statusText.textContent = 'VERIFICANDO SERVIDOR...';
-      statusDetail.textContent = SERVER_ADDRESS;
-      playerCount.textContent = '— / —';
-
-      const results = await Promise.allSettled(
-        STATUS_PROVIDERS.map(provider => queryProvider(provider))
-      );
-
-      const successful = results
-        .filter(result => result.status === 'fulfilled')
-        .map(result => result.value);
-
-      const onlineResult = successful.find(result => result.online === true && !motdSaysOffline(result?.motd));
-
-      if (onlineResult) {
-        setServerOnline(onlineResult, onlineResult.provider);
-        return;
+      if (!response.ok) {
+        throw new Error('HTTP ' + response.status);
       }
 
-      const aternosOffline = successful.find(result => motdSaysOffline(result?.motd));
-      if (aternosOffline) {
-        setServerOffline('Servidor desligado no Aternos');
-        return;
+      const data = await response.json();
+
+      if (data.online === true) {
+        setOnline(data);
+      } else if (data.online === false) {
+        setOffline(data.detail || 'Servidor desligado no Aternos');
+      } else {
+        setUnavailable();
       }
-
-      if (successful.length > 0) {
-        setServerOffline();
-        return;
-      }
-
-      statusDot.className = 'status-dot';
-      statusText.textContent = 'STATUS INDISPONÍVEL';
-      statusDetail.textContent = 'As fontes de status não responderam agora';
-      playerCount.textContent = '— / —';
+    } catch (error) {
+      console.error('Falha ao consultar status:', error);
+      setUnavailable();
     }
+  }
 
-    copyAddressButton?.addEventListener('click', async () => {
-      try {
-        await navigator.clipboard.writeText(SERVER_ADDRESS);
-        toast.textContent = 'Servidor copiado: ' + SERVER_ADDRESS;
-      } catch {
-        toast.textContent = SERVER_ADDRESS;
-      }
+  refreshStatusButton?.addEventListener('click', refreshServerStatus);
 
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 2600);
-    });
-
-    refreshStatusButton?.addEventListener('click', refreshServerStatus);
-
-    refreshServerStatus();
-    setInterval(refreshServerStatus, 30000);
-
-
-const enterSiteButton = document.getElementById('enter-site');
-
-    if (backgroundMusic) {
-      backgroundMusic.volume = 0.25;
-    }
-
-    function syncMusicUi() {
-      if (!backgroundMusic || !musicToggle || !musicStatus) return;
-      const playing = !backgroundMusic.paused;
-      musicToggle.textContent = playing ? '❚❚' : '▶';
-      musicStatus.textContent = playing ? 'Tocando em segundo plano' : 'Música pausada';
-    }
-
-    async function startLocalMusic() {
-      if (!backgroundMusic) return;
-      try {
-        await backgroundMusic.play();
-      } catch (error) {
-        console.warn('O navegador bloqueou a reprodução automática:', error);
-      }
-      syncMusicUi();
-    }
-
-    enterSiteButton?.addEventListener('click', async () => {
-      await startLocalMusic();
-      enterOverlay?.classList.add('hidden');
-      try { localStorage.setItem('ethernals-entered', '1'); } catch {}
-    });
-if (backgroundMusic.paused) await startLocalMusic();
-      else backgroundMusic.pause();
-      syncMusicUi();
-    });
-backgroundMusic.volume = Number(musicVolume.value) / 100;
-    });
-
-    backgroundMusic?.addEventListener('play', syncMusicUi);
-    backgroundMusic?.addEventListener('pause', syncMusicUi);
-    backgroundMusic?.addEventListener('ended', syncMusicUi);
-
-  </script>
-</div>
-<div class="music-info">
-      <strong>Jerk — Oliver Tree</strong>
-      <span id="music-status">Música pronta</span>
-    </div>
-    <input class="music-volume" id="music-volume" type="range" min="0" max="100" value="25" aria-label="Volume da música" />
-    <button class="music-button" id="music-toggle" type="button" aria-label="Tocar ou pausar música">▶</button>
-  </div>
+  refreshServerStatus();
+  setInterval(refreshServerStatus, 30000);
+</script>
 </body>
 </html>
