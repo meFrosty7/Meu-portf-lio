@@ -1,16 +1,24 @@
-ETHERNALS BEDROCK — V11 STATUS LIMPO
+ETHERNALS BEDROCK — V12 STATUS REAL
 
-Correções:
-- O MOTD técnico do Aternos/DynIP não aparece mais no card.
-- Códigos de formatação do Minecraft (§7, §a etc.) são removidos.
-- Quando online, o detalhe mostra:
-  Ethernals Bedrock • Minecraft Bedrock
-- Se a API não fornecer o máximo de jogadores, aparece — / — em vez de 0 / —.
-- Mantida a lógica V10 de status online/offline.
-- Sem música.
-- Sem /api/status.
+CORREÇÃO PRINCIPAL
+A versão anterior ocultava a mensagem de gateway do Aternos, mas ainda
+aceitava aquela resposta como ONLINE.
 
-Para GitHub + Vercel:
-1. Substitua index.html no repositório.
-2. Faça Commit.
-3. Aguarde o deploy automático da Vercel.
+Agora uma resposta só conta como ONLINE quando:
+- a API informa online=true;
+- o MOTD NÃO contém Offline Aternos;
+- o MOTD NÃO contém aternos.org/connect / Connect to...;
+- existe um limite máximo de jogadores válido (> 0).
+
+Se o Aternos responder através do proxy/fallback, o site mostra OFFLINE.
+
+FONTES
+- SnowDev
+- mcstatus.io
+
+As duas são consultadas ao mesmo tempo.
+Se alguma delas confirmar um servidor real online, aparece ONLINE.
+Se nenhuma confirmar online e alguma indicar offline/fallback, aparece OFFLINE.
+
+PARA GITHUB + VERCEL
+Substitua apenas o index.html pelo desta versão e faça Commit.

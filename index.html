@@ -1344,6 +1344,7 @@
 
 
 
+
 <script>
   const SERVER_ADDRESS = 'Ethernals.aternos.me:12701';
 
@@ -1411,24 +1412,56 @@
       .trim();
   }
 
-  function motdIsAternosOffline(motd) {
-    const text = normalizeText(motd)
+  function normalizedMatchText(value) {
+    return normalizeText(value)
       .toLowerCase()
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '');
+  }
+
+  function motdIsOffline(motd) {
+    const text = normalizedMatchText(motd);
 
     return text.includes('offline aternos') ||
            text.includes('aternos offline') ||
            text.includes('server is offline') ||
+           text.includes('server offline') ||
            text.includes('servidor offline') ||
            text.includes('servidor esta offline') ||
            text.includes('servidor desligado');
   }
 
   function motdIsAternosGateway(motd) {
-    const text = normalizeText(motd).toLowerCase();
+    const text = normalizedMatchText(motd);
+
     return text.includes('aternos.org/connect') ||
-           (text.includes('connect to') && text.includes('why?'));
+           text.includes('why? read this') ||
+           text.includes('why read this') ||
+           (text.includes('connect to') && text.includes('aternos'));
+  }
+
+  function hasValidPlayerLimit(value) {
+    const max = Number(value);
+    return Number.isFinite(max) && max > 0;
+  }
+
+  function classifyResult(result) {
+    if (!result) return 'unknown';
+
+    // O proxy/fallback do Aternos responde ao ping mesmo com o servidor desligado.
+    // Nunca deve ser tratado como servidor realmente online.
+    if (motdIsAternosGateway(result.motd)) return 'offline';
+    if (motdIsOffline(result.motd)) return 'offline';
+
+    if (result.online === false) return 'offline';
+
+    // Só aceita ONLINE se houver resposta de servidor real,
+    // incluindo um limite de jogadores válido.
+    if (result.online === true && hasValidPlayerLimit(result.playersMax)) {
+      return 'online';
+    }
+
+    return 'unknown';
   }
 
   function setChecking() {
@@ -1441,35 +1474,31 @@
   function setOnline(data, source = '') {
     statusDot.className = 'status-dot online';
     statusText.textContent = 'SERVIDOR ONLINE';
-
-    // Nunca exibe MOTD técnico/DynIP do Aternos para o visitante.
     statusDetail.textContent = 'Ethernals Bedrock • Minecraft Bedrock';
 
     const online = Number(data?.playersOnline);
     const max = Number(data?.playersMax);
 
-    // Só mostra contagem quando a API realmente informou os dois números.
     if (Number.isFinite(online) && Number.isFinite(max) && max > 0) {
       playerCount.textContent = `${online} / ${max}`;
     } else {
       playerCount.textContent = '— / —';
     }
 
-    console.log('Status ONLINE via', source, data);
+    console.log('ONLINE confirmado por', source, data);
   }
 
-  function setOffline(detail = 'Servidor desligado no Aternos', source = '') {
+  function setOffline(detail = 'Servidor desligado no Aternos') {
     statusDot.className = 'status-dot offline';
     statusText.textContent = 'SERVIDOR OFFLINE';
     statusDetail.textContent = detail;
     playerCount.textContent = '— / —';
-    console.log('Status OFFLINE via', source);
   }
 
   function setUnavailable() {
     statusDot.className = 'status-dot';
     statusText.textContent = 'STATUS INDISPONÍVEL';
-    statusDetail.textContent = 'Não foi possível consultar o servidor agora';
+    statusDetail.textContent = 'Não foi possível confirmar o status agora';
     playerCount.textContent = '— / —';
   }
 
@@ -1500,6 +1529,7 @@
     const data = await fetchJson(url);
 
     return {
+      source: 'SnowDev',
       online: Boolean(data?.online),
       playersOnline: Number(
         data?.players?.online ??
@@ -1510,7 +1540,7 @@
       playersMax:
         data?.players?.max ??
         data?.maxPlayers ??
-        '—',
+        null,
       motd: normalizeText(
         data?.motd?.clean ??
         data?.motd ??
@@ -1528,83 +1558,64 @@
     const data = await fetchJson(url);
 
     return {
+      source: 'mcstatus.io',
       online: Boolean(data?.online),
       playersOnline: Number(data?.players?.online ?? 0),
-      playersMax: data?.players?.max ?? '—',
+      playersMax: data?.players?.max ?? null,
       motd: normalizeText(data?.motd?.clean ?? '')
     };
-  }
-
-  function applyResult(result, source) {
-    if (motdIsAternosOffline(result.motd)) {
-      setOffline('Servidor desligado no Aternos', source);
-      return true;
-    }
-
-    if (result.online === true) {
-      setOnline(result, source);
-      return true;
-    }
-
-    if (result.online === false) {
-      setOffline('Servidor offline', source);
-      return true;
-    }
-
-    return false;
   }
 
   async function refreshServerStatus() {
     setChecking();
 
-    // 1) SnowDev é a fonte principal.
-    try {
-      const snow = await querySnowDev();
+    const settled = await Promise.allSettled([
+      querySnowDev(),
+      queryMcStatusIO()
+    ]);
 
-      // Se SnowDev realmente enxergou o servidor online, aceita imediatamente.
-      if (snow.online === true && !motdIsAternosOffline(snow.motd)) {
-        if (motdIsAternosGateway(snow.motd)) {
-          console.log('Gateway/DynIP do Aternos detectado; MOTD técnico ocultado.');
-        }
-        setOnline(snow, 'SnowDev');
-        return;
-      }
+    const results = settled
+      .filter(item => item.status === 'fulfilled')
+      .map(item => item.value);
 
-      // Se ela diz offline, fazemos uma segunda checagem antes de concluir,
-      // porque o servidor pode ter acabado de ligar.
-      try {
-        const second = await queryMcStatusIO();
-
-        if (second.online === true && !motdIsAternosOffline(second.motd)) {
-          setOnline(second, 'mcstatus.io');
-          return;
-        }
-
-        // As duas fontes não confirmaram online.
-        if (motdIsAternosOffline(snow.motd) || motdIsAternosOffline(second.motd)) {
-          setOffline('Servidor desligado no Aternos', 'SnowDev + mcstatus.io');
-        } else {
-          setOffline('Servidor offline', 'SnowDev + mcstatus.io');
-        }
-        return;
-      } catch (secondError) {
-        console.warn('mcstatus.io falhou:', secondError);
-
-        // SnowDev respondeu; se a segunda fonte falhou, usa SnowDev.
-        applyResult(snow, 'SnowDev');
-        return;
-      }
-    } catch (snowError) {
-      console.warn('SnowDev falhou:', snowError);
+    if (results.length === 0) {
+      setUnavailable();
+      return;
     }
 
-    // 2) Fallback caso SnowDev não responda.
-    try {
-      const second = await queryMcStatusIO();
-      applyResult(second, 'mcstatus.io');
+    const classified = results.map(result => ({
+      ...result,
+      verdict: classifyResult(result)
+    }));
+
+    console.table(classified.map(r => ({
+      fonte: r.source,
+      respostaOnline: r.online,
+      jogadores: r.playersOnline,
+      max: r.playersMax,
+      motd: r.motd,
+      veredito: r.verdict
+    })));
+
+    // Uma resposta ONLINE válida vence respostas offline antigas/em cache.
+    const realOnline = classified.find(r => r.verdict === 'online');
+
+    if (realOnline) {
+      setOnline(realOnline, realOnline.source);
       return;
-    } catch (secondError) {
-      console.warn('mcstatus.io falhou:', secondError);
+    }
+
+    // Sem nenhuma confirmação real de online, qualquer resposta offline
+    // (inclusive gateway do Aternos) significa OFFLINE.
+    const offline = classified.find(r => r.verdict === 'offline');
+
+    if (offline) {
+      if (motdIsAternosGateway(offline.motd) || motdIsOffline(offline.motd)) {
+        setOffline('Servidor desligado no Aternos');
+      } else {
+        setOffline('Servidor offline');
+      }
+      return;
     }
 
     setUnavailable();
