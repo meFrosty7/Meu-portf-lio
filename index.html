@@ -1393,21 +1393,22 @@
   });
 
   function normalizeText(value) {
+    let text = '';
+
     if (Array.isArray(value)) {
-      return value.join(' ').replace(/\s+/g, ' ').trim();
+      text = value.join(' ');
+    } else if (value && typeof value === 'object') {
+      if (Array.isArray(value.clean)) text = value.clean.join(' ');
+      else if (typeof value.clean === 'string') text = value.clean;
+      else text = '';
+    } else {
+      text = String(value ?? '');
     }
 
-    if (value && typeof value === 'object') {
-      if (Array.isArray(value.clean)) {
-        return value.clean.join(' ').replace(/\s+/g, ' ').trim();
-      }
-      if (typeof value.clean === 'string') {
-        return value.clean.replace(/\s+/g, ' ').trim();
-      }
-      return '';
-    }
-
-    return String(value ?? '').replace(/\s+/g, ' ').trim();
+    return text
+      .replace(/§[0-9A-FK-OR]/gi, '')
+      .replace(/\s+/g, ' ')
+      .trim();
   }
 
   function motdIsAternosOffline(motd) {
@@ -1424,6 +1425,12 @@
            text.includes('servidor desligado');
   }
 
+  function motdIsAternosGateway(motd) {
+    const text = normalizeText(motd).toLowerCase();
+    return text.includes('aternos.org/connect') ||
+           (text.includes('connect to') && text.includes('why?'));
+  }
+
   function setChecking() {
     statusDot.className = 'status-dot';
     statusText.textContent = 'VERIFICANDO SERVIDOR...';
@@ -1434,8 +1441,20 @@
   function setOnline(data, source = '') {
     statusDot.className = 'status-dot online';
     statusText.textContent = 'SERVIDOR ONLINE';
-    statusDetail.textContent = data.motd || 'Ethernals Bedrock • Minecraft Bedrock';
-    playerCount.textContent = `${data.playersOnline ?? 0} / ${data.playersMax ?? '—'}`;
+
+    // Nunca exibe MOTD técnico/DynIP do Aternos para o visitante.
+    statusDetail.textContent = 'Ethernals Bedrock • Minecraft Bedrock';
+
+    const online = Number(data?.playersOnline);
+    const max = Number(data?.playersMax);
+
+    // Só mostra contagem quando a API realmente informou os dois números.
+    if (Number.isFinite(online) && Number.isFinite(max) && max > 0) {
+      playerCount.textContent = `${online} / ${max}`;
+    } else {
+      playerCount.textContent = '— / —';
+    }
+
     console.log('Status ONLINE via', source, data);
   }
 
@@ -1443,7 +1462,7 @@
     statusDot.className = 'status-dot offline';
     statusText.textContent = 'SERVIDOR OFFLINE';
     statusDetail.textContent = detail;
-    playerCount.textContent = '0 / —';
+    playerCount.textContent = '— / —';
     console.log('Status OFFLINE via', source);
   }
 
@@ -1544,6 +1563,9 @@
 
       // Se SnowDev realmente enxergou o servidor online, aceita imediatamente.
       if (snow.online === true && !motdIsAternosOffline(snow.motd)) {
+        if (motdIsAternosGateway(snow.motd)) {
+          console.log('Gateway/DynIP do Aternos detectado; MOTD técnico ocultado.');
+        }
         setOnline(snow, 'SnowDev');
         return;
       }
