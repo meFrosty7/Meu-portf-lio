@@ -1,17 +1,21 @@
-ETHERNALS BEDROCK — V9 STATUS DIRETO
+ETHERNALS BEDROCK — V10 STATUS CORRIGIDO
 
-Esta versão NÃO usa /api/status e NÃO precisa de função Serverless da Vercel.
+CORREÇÃO:
+- SnowDev agora é a fonte principal.
+- mcstatus.io é usado para confirmar quando a primeira fonte diz offline.
+- Se QUALQUER uma das duas fontes atuais confirmar online corretamente,
+  o site mostra SERVIDOR ONLINE.
+- "Offline Aternos" só vale para a fonte que devolveu essa mensagem;
+  uma resposta velha não derruba outra fonte que já confirmou ONLINE.
+- Removida a mcsrvstat.us do site porque ela pode ficar vários minutos em cache.
+- Atualização automática a cada 30 segundos.
+- Botão Atualizar continua funcionando.
+- Sem música.
+- Sem /api/status.
 
-Arquivos necessários:
-- index.html
-- ethernals-icon.png
+PARA VERCEL + GITHUB:
+Substitua no repositório:
+1. index.html
+2. ethernals-icon.png (se necessário)
 
-No GitHub:
-1. Substitua o index.html antigo por este.
-2. Substitua/mande ethernals-icon.png.
-3. Faça Commit.
-4. Aguarde o deploy automático da Vercel.
-
-O status consulta múltiplas APIs diretamente pelo navegador.
-Se o MOTD contiver "Offline Aternos", o site força SERVIDOR OFFLINE.
-O status é atualizado a cada 30 segundos.
+Faça Commit. A Vercel fará o deploy automaticamente.

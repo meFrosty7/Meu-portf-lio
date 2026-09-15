@@ -1343,6 +1343,7 @@
   <div class="toast" id="toast">IP copiado!</div>
 
 
+
 <script>
   const SERVER_ADDRESS = 'Ethernals.aternos.me:12701';
 
@@ -1409,21 +1410,18 @@
     return String(value ?? '').replace(/\s+/g, ' ').trim();
   }
 
-  function motdIsOffline(motd) {
+  function motdIsAternosOffline(motd) {
     const text = normalizeText(motd)
       .toLowerCase()
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '');
 
-    return [
-      'offline aternos',
-      'aternos offline',
-      'server is offline',
-      'server offline',
-      'servidor offline',
-      'servidor esta offline',
-      'servidor desligado'
-    ].some(term => text.includes(term));
+    return text.includes('offline aternos') ||
+           text.includes('aternos offline') ||
+           text.includes('server is offline') ||
+           text.includes('servidor offline') ||
+           text.includes('servidor esta offline') ||
+           text.includes('servidor desligado');
   }
 
   function setChecking() {
@@ -1433,24 +1431,26 @@
     playerCount.textContent = '— / —';
   }
 
-  function setOnline(data) {
+  function setOnline(data, source = '') {
     statusDot.className = 'status-dot online';
     statusText.textContent = 'SERVIDOR ONLINE';
     statusDetail.textContent = data.motd || 'Ethernals Bedrock • Minecraft Bedrock';
     playerCount.textContent = `${data.playersOnline ?? 0} / ${data.playersMax ?? '—'}`;
+    console.log('Status ONLINE via', source, data);
   }
 
-  function setOffline(detail = 'Servidor desligado no Aternos') {
+  function setOffline(detail = 'Servidor desligado no Aternos', source = '') {
     statusDot.className = 'status-dot offline';
     statusText.textContent = 'SERVIDOR OFFLINE';
     statusDetail.textContent = detail;
     playerCount.textContent = '0 / —';
+    console.log('Status OFFLINE via', source);
   }
 
   function setUnavailable() {
     statusDot.className = 'status-dot';
     statusText.textContent = 'STATUS INDISPONÍVEL';
-    statusDetail.textContent = 'As fontes de status não responderam agora';
+    statusDetail.textContent = 'Não foi possível consultar o servidor agora';
     playerCount.textContent = '— / —';
   }
 
@@ -1472,94 +1472,117 @@
     }
   }
 
-  const STATUS_PROVIDERS = [
-    {
-      name: 'SnowDev',
-      url: 'https://mcstatus.snowdev.com.br/api/query/v3/' + encodeURIComponent(SERVER_ADDRESS),
-      parse(data) {
-        return {
-          online: Boolean(data?.online),
-          playersOnline: Number(data?.players?.online ?? data?.players?.now ?? data?.onlinePlayers ?? 0),
-          playersMax: data?.players?.max ?? data?.maxPlayers ?? '—',
-          motd: normalizeText(data?.motd?.clean ?? data?.motd ?? '')
-        };
-      }
-    },
-    {
-      name: 'mcstatus.io',
-      url: 'https://api.mcstatus.io/v2/status/bedrock/' + encodeURIComponent(SERVER_ADDRESS) + '?timeout=5',
-      parse(data) {
-        return {
-          online: Boolean(data?.online),
-          playersOnline: Number(data?.players?.online ?? 0),
-          playersMax: data?.players?.max ?? '—',
-          motd: normalizeText(data?.motd?.clean ?? '')
-        };
-      }
-    },
-    {
-      name: 'mcsrvstat.us',
-      url: 'https://api.mcsrvstat.us/bedrock/3/' + encodeURIComponent(SERVER_ADDRESS),
-      parse(data) {
-        return {
-          online: Boolean(data?.online),
-          playersOnline: Number(data?.players?.online ?? 0),
-          playersMax: data?.players?.max ?? '—',
-          motd: normalizeText(data?.motd?.clean ?? '')
-        };
-      }
-    }
-  ];
+  async function querySnowDev() {
+    const url =
+      'https://mcstatus.snowdev.com.br/api/query/v3/' +
+      SERVER_ADDRESS +
+      '?_=' + Date.now();
 
-  async function checkProvider(provider) {
-    const data = await fetchJson(provider.url);
-    const parsed = provider.parse(data);
+    const data = await fetchJson(url);
 
     return {
-      provider: provider.name,
-      ...parsed,
-      explicitOffline: motdIsOffline(parsed.motd)
+      online: Boolean(data?.online),
+      playersOnline: Number(
+        data?.players?.online ??
+        data?.players?.now ??
+        data?.onlinePlayers ??
+        0
+      ),
+      playersMax:
+        data?.players?.max ??
+        data?.maxPlayers ??
+        '—',
+      motd: normalizeText(
+        data?.motd?.clean ??
+        data?.motd ??
+        ''
+      )
     };
+  }
+
+  async function queryMcStatusIO() {
+    const url =
+      'https://api.mcstatus.io/v2/status/bedrock/' +
+      SERVER_ADDRESS +
+      '?timeout=5&_=' + Date.now();
+
+    const data = await fetchJson(url);
+
+    return {
+      online: Boolean(data?.online),
+      playersOnline: Number(data?.players?.online ?? 0),
+      playersMax: data?.players?.max ?? '—',
+      motd: normalizeText(data?.motd?.clean ?? '')
+    };
+  }
+
+  function applyResult(result, source) {
+    if (motdIsAternosOffline(result.motd)) {
+      setOffline('Servidor desligado no Aternos', source);
+      return true;
+    }
+
+    if (result.online === true) {
+      setOnline(result, source);
+      return true;
+    }
+
+    if (result.online === false) {
+      setOffline('Servidor offline', source);
+      return true;
+    }
+
+    return false;
   }
 
   async function refreshServerStatus() {
     setChecking();
 
-    const settled = await Promise.allSettled(
-      STATUS_PROVIDERS.map(checkProvider)
-    );
+    // 1) SnowDev é a fonte principal.
+    try {
+      const snow = await querySnowDev();
 
-    const results = settled
-      .filter(item => item.status === 'fulfilled')
-      .map(item => item.value);
+      // Se SnowDev realmente enxergou o servidor online, aceita imediatamente.
+      if (snow.online === true && !motdIsAternosOffline(snow.motd)) {
+        setOnline(snow, 'SnowDev');
+        return;
+      }
 
-    if (results.length === 0) {
-      setUnavailable();
-      return;
+      // Se ela diz offline, fazemos uma segunda checagem antes de concluir,
+      // porque o servidor pode ter acabado de ligar.
+      try {
+        const second = await queryMcStatusIO();
+
+        if (second.online === true && !motdIsAternosOffline(second.motd)) {
+          setOnline(second, 'mcstatus.io');
+          return;
+        }
+
+        // As duas fontes não confirmaram online.
+        if (motdIsAternosOffline(snow.motd) || motdIsAternosOffline(second.motd)) {
+          setOffline('Servidor desligado no Aternos', 'SnowDev + mcstatus.io');
+        } else {
+          setOffline('Servidor offline', 'SnowDev + mcstatus.io');
+        }
+        return;
+      } catch (secondError) {
+        console.warn('mcstatus.io falhou:', secondError);
+
+        // SnowDev respondeu; se a segunda fonte falhou, usa SnowDev.
+        applyResult(snow, 'SnowDev');
+        return;
+      }
+    } catch (snowError) {
+      console.warn('SnowDev falhou:', snowError);
     }
 
-    // "Offline Aternos" has priority over a provider claiming online.
-    const explicitOffline = results.find(r => r.explicitOffline);
-    if (explicitOffline) {
-      setOffline('Servidor desligado no Aternos');
+    // 2) Fallback caso SnowDev não responda.
+    try {
+      const second = await queryMcStatusIO();
+      applyResult(second, 'mcstatus.io');
       return;
-    }
-
-    const onlineResults = results.filter(r => r.online === true);
-    const offlineResults = results.filter(r => r.online === false);
-
-    if (onlineResults.length > offlineResults.length) {
-      const best =
-        onlineResults.find(r => r.playersMax !== '—' && r.playersMax != null) ||
-        onlineResults[0];
-
-      setOnline(best);
-      return;
-    }
-
-    if (offlineResults.length > 0) {
-      setOffline('Servidor offline');
-      return;
+    } catch (secondError) {
+      console.warn('mcstatus.io falhou:', secondError);
     }
 
     setUnavailable();
