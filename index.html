@@ -4,10 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#08110d" />
-  <meta name="description" content="Ethernals Bedrock — servidor Minecraft Bedrock Survival focado em economia, PvP e clãs." />
+  <meta name="description" content="Ethernals Bedrock — servidor temporariamente em manutenção após um incidente com perda de dados." />
   <link rel="icon" type="image/png" href="ethernals-icon.png" />
   <link rel="apple-touch-icon" href="ethernals-icon.png" />
-  <title>Ethernals Bedrock — Survival, Economia e PvP</title>
+  <title>Ethernals Bedrock — Servidor em manutenção</title>
 
   <style>
     :root {
@@ -924,6 +924,130 @@
     @media (max-width: 560px) {
     }
 
+
+    .maintenance-alert {
+      margin-top: 22px;
+      padding: 22px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 183, 74, .34);
+      background:
+        radial-gradient(circle at 10% 0%, rgba(255, 183, 74, .12), transparent 32%),
+        rgba(35, 24, 8, .72);
+      box-shadow: 0 18px 45px rgba(0,0,0,.28);
+    }
+
+    .maintenance-alert strong {
+      display: block;
+      color: #ffd28a;
+      font-size: 17px;
+      margin-bottom: 8px;
+    }
+
+    .maintenance-alert p {
+      margin: 0;
+      color: #e9d8b8;
+      line-height: 1.65;
+      font-size: 14px;
+    }
+
+    .maintenance-warning {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 10px 13px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 183, 74, .34);
+      background: rgba(255, 183, 74, .10);
+      color: #ffd28a;
+      font-size: 12px;
+      font-weight: 950;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .maintenance-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: #ffb74a;
+      box-shadow: 0 0 0 6px rgba(255,183,74,.12), 0 0 24px rgba(255,183,74,.35);
+      animation: maintenancePulse 1.8s infinite;
+    }
+
+    @keyframes maintenancePulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(.78); opacity: .6; }
+    }
+
+    .status-card.maintenance {
+      border-color: rgba(255, 183, 74, .34);
+      background: linear-gradient(135deg, rgba(255,183,74,.12), rgba(255,255,255,.025));
+    }
+
+    .status-card.maintenance .status-dot {
+      background: #ffb74a;
+      box-shadow: 0 0 0 7px rgba(255,183,74,.11), 0 0 22px rgba(255,183,74,.35);
+      animation: maintenancePulse 1.8s infinite;
+    }
+
+    .maintenance-lock {
+      margin-top: 12px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 183, 74, .24);
+      background: rgba(255, 183, 74, .07);
+      color: #f4dfb9;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .maintenance-disabled {
+      cursor: not-allowed;
+      opacity: .82;
+      pointer-events: none;
+    }
+
+    .incident-panel {
+      display: grid;
+      gap: 10px;
+      padding: 18px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 183, 74, .23);
+      background: rgba(4,10,16,.82);
+    }
+
+    .incident-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 9px 0;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .incident-row:last-child { border-bottom: 0; }
+
+    .incident-row strong {
+      color: white;
+      text-align: right;
+    }
+
+    .incident-row strong.warning { color: #ffd28a; }
+
+    html[data-server-state="arrumado"] .maintenance-warning {
+      color: #bdf7cb;
+      border-color: rgba(160,255,189,.30);
+      background: rgba(160,255,189,.09);
+    }
+
+    html[data-server-state="arrumado"] .maintenance-dot,
+    html[data-server-state="arrumado"] .status-card.maintenance .status-dot {
+      background: #a0ffbd;
+      box-shadow: 0 0 0 7px rgba(160,255,189,.10), 0 0 22px rgba(160,255,189,.28);
+    }
+
   </style>
 </head>
 
@@ -943,10 +1067,10 @@
         <a href="#clans">Clãs</a>
         <a href="#backups">Backups</a>
         <a href="#regras">Regras</a>
-        <a href="#entrar">Entrar</a>
+        <a href="#status">Status</a>
       </div>
 
-      <a class="button secondary" href="#entrar">Jogar agora</a>
+      <a class="button secondary" href="#status">🛠 Em manutenção</a>
     </div>
   </nav>
 
@@ -973,85 +1097,55 @@
       <div class="container hero-grid">
         <div>
           <img class="hero-logo" src="ethernals-icon.png" alt="Ethernals Bedrock" />
-          <div class="pill"><span class="pulse"></span> 🎮 Exclusivo para Minecraft Bedrock</div>
-          <h1>Construa. Enriqueça. <span>Domine.</span></h1>
-          <p class="hero-copy">
-            O <strong>Ethernals Bedrock</strong> é um servidor <strong>exclusivo para Minecraft Bedrock</strong>, focado em economia,
-            PvP e progressão. Monte sua base, venda recursos, crie seu clã e dispute espaço
-            entre os jogadores mais ricos do servidor.
+          <div class="maintenance-warning"><span class="maintenance-dot"></span><span data-status-badge>🛠 Manutenção em andamento</span></div>
+          <h1 id="maintenance-hero-title">Servidor em <span>manutenção.</span></h1>
+          <p class="hero-copy" data-status-summary>
+            Os dados do servidor foram perdidos e o servidor precisou ser reiniciado por um motivo que ainda não foi identificado.
+            A equipe está investigando a causa e trabalhando para normalizar o servidor.
           </p>
 
           <div class="hero-actions">
-            <a class="button primary" href="#entrar">⚔ Entrar no servidor</a>
-            <a class="button secondary" href="#sistemas">Ver sistemas</a>
+            <a class="button primary maintenance-disabled" href="#status" aria-disabled="true">🔒 Entradas temporariamente bloqueadas</a>
+            <a class="button secondary" href="#status">Ver atualização</a>
           </div>
 
           <div class="mini-stats">
-            <div class="mini-stat">
-              <strong>2.500</strong>
-              <span>moedas a cada 15 min</span>
-            </div>
-            <div class="mini-stat">
-              <strong>150K</strong>
-              <span>para criar um clã</span>
-            </div>
-            <div class="mini-stat">
-              <strong>30 dias</strong>
-              <span>iniciais sem PvP</span>
-            </div>
-            <div class="mini-stat">
-              <strong>Bedrock</strong>
-              <span>Java não é suportado</span>
-            </div>
+            <div class="mini-stat"><strong data-status-short>MANUTENÇÃO</strong><span>status atual</span></div>
+            <div class="mini-stat"><strong data-status-eta>1h–3h</strong><span>previsão estimada</span></div>
+            <div class="mini-stat"><strong>Dados perdidos</strong><span>incidente confirmado</span></div>
+            <div class="mini-stat"><strong>Investigando</strong><span>causa ainda desconhecida</span></div>
           </div>
 
-          <div class="status-card" aria-live="polite">
+          <div class="status-card maintenance" aria-live="polite">
             <span class="status-dot" id="server-status-dot"></span>
             <div class="status-main">
-              <strong id="server-status-text">VERIFICANDO SERVIDOR...</strong>
-              <span id="server-status-detail">Ethernals.aternos.me:62006</span>
+              <strong id="server-status-text" data-status-label>MANUTENÇÃO EM ANDAMENTO</strong>
+              <span id="server-status-detail" data-status-detail>Estamos investigando a perda de dados e o reinício inesperado.</span>
             </div>
             <div class="status-players">
-              <strong id="server-player-count">— / —</strong>
-              <span>jogadores</span>
-              <button class="copy-mini" id="refresh-server-status" type="button" style="margin-top:8px">Atualizar</button>
+              <strong id="server-player-count" data-status-eta>1h–3h</strong>
+              <span>previsão</span>
             </div>
           </div>
 
-          <div class="server-address-box">
-            <code>Ethernals.aternos.me:62006</code>
-            <button class="copy-mini" id="copy-server-address" type="button">Copiar</button>
+          <div class="maintenance-lock">
+            🔒 O IP, os botões de conexão e os atalhos para adicionar o servidor foram ocultados enquanto a manutenção estiver ativa.
           </div>
         </div>
 
         <div class="server-card">
           <div class="mc-window">
             <div class="floating-tag">
-              <strong>[FRO7] Frosty Du7</strong>
-              <span>🪙 185.500</span>
+              <strong data-status-card-title>⚠️ INCIDENTE ATIVO</strong>
+              <span data-status-card-subtitle>Equipe investigando</span>
             </div>
 
-            <div class="server-info">
-              <div class="server-info-row">
-                <span>Servidor</span>
-                <strong>Ethernals Bedrock</strong>
-              </div>
-              <div class="server-info-row">
-                <span>Modo</span>
-                <strong>Survival</strong>
-              </div>
-              <div class="server-info-row">
-                <span>Foco</span>
-                <strong>Economia + PvP</strong>
-              </div>
-              <div class="server-info-row">
-                <span>Plataforma</span>
-                <strong>🎮 Minecraft Bedrock</strong>
-              </div>
-              <div class="server-info-row">
-                <span>Java Edition</span>
-                <strong style="color:#9fd0ff">✖ Não suportado</strong>
-              </div>
+            <div class="incident-panel">
+              <div class="incident-row"><span>Status</span><strong class="warning" data-status-label>MANUTENÇÃO EM ANDAMENTO</strong></div>
+              <div class="incident-row"><span>Dados</span><strong>Perda confirmada</strong></div>
+              <div class="incident-row"><span>Reinício</span><strong>Motivo ainda desconhecido</strong></div>
+              <div class="incident-row"><span>Estimativa</span><strong data-status-eta>1h–3h</strong></div>
+              <div class="incident-row"><span>Acesso</span><strong>Temporariamente bloqueado</strong></div>
             </div>
           </div>
         </div>
@@ -1273,7 +1367,7 @@
           <div class="eyebrow">Regras</div>
           <h2>Competição sim. Trapaça e abuso, não.</h2>
           <p>
-            Entrar no servidor significa concordar com estas regras. Violações podem gerar punições de acordo com a gravidade.
+            Jogar no servidor significa concordar com estas regras. Violações podem gerar punições de acordo com a gravidade.
           </p>
         </div>
 
@@ -1311,22 +1405,24 @@
       </div>
     </section>
 
-    <section id="entrar">
+    <section id="status">
       <div class="container">
         <div class="cta">
           <div>
-            <div class="eyebrow">Ethernals Bedrock</div>
-            <h2>Seu survival pode começar agora.</h2>
-            <p>
-              Entre pelo Minecraft Bedrock, faça sua primeira mineração, monte sua economia e prepare seu clã antes do PvP começar.
-              Use o endereço abaixo ou o botão de adicionar servidor para entrar pelo Minecraft Bedrock.
+            <div class="eyebrow">Atualização do servidor</div>
+            <h2 data-status-cta-title>Manutenção em andamento.</h2>
+            <p data-status-detail>
+              Estamos investigando a perda de dados e o reinício inesperado. A causa ainda não foi identificada.
             </p>
+            <div class="maintenance-alert">
+              <strong>Previsão estimada: <span data-status-eta>1h–3h</span></strong>
+              <p>
+                O prazo é uma estimativa e pode mudar conforme a investigação. Nenhum método de entrada no servidor é exibido nesta página durante a manutenção.
+              </p>
+            </div>
           </div>
-
           <div style="display:flex;gap:10px;flex-wrap:wrap">
-            <button class="button primary" id="copy-ip" data-ip="Ethernals.aternos.me:62006">📋 Copiar IP</button>
-            <a class="button secondary" href="https://add.aternos.org/Ethernals" target="_blank" rel="noopener">➕ Adicionar servidor</a>
-            <a class="button secondary" href="#" id="discord-link">Discord em breve</a>
+            <span class="button primary maintenance-disabled" aria-disabled="true" data-status-button>🛠 Servidor em manutenção</span>
           </div>
         </div>
       </div>
@@ -1340,23 +1436,54 @@
     </div>
   </footer>
 
-  <div class="toast" id="toast">IP copiado!</div>
+  <div class="toast" id="toast">Status atualizado.</div>
 
 
 
 
 <script>
-  const SERVER_ADDRESS = 'Ethernals.aternos.me:62006';
+  const STATUS_STORAGE_KEY = 'ethernals-server-status';
 
-  const copyButton = document.getElementById('copy-ip');
-  const copyAddressButton = document.getElementById('copy-server-address');
-  const refreshStatusButton = document.getElementById('refresh-server-status');
+  const STATUS_PRESETS = {
+    manutencao: {
+      badge: '🛠 Manutenção em andamento',
+      label: 'MANUTENÇÃO EM ANDAMENTO',
+      short: 'MANUTENÇÃO',
+      detail: 'Estamos investigando a perda de dados e o reinício inesperado. A causa ainda não foi identificada.',
+      summary: 'Os dados do servidor foram perdidos e o servidor precisou ser reiniciado por um motivo que ainda não foi identificado. A equipe está investigando a causa e trabalhando para normalizar o servidor.',
+      eta: '1h–3h',
+      cardTitle: '⚠️ INCIDENTE ATIVO',
+      cardSubtitle: 'Equipe investigando',
+      ctaTitle: 'Manutenção em andamento.',
+      button: '🛠 Servidor em manutenção'
+    },
+    investigando: {
+      badge: '🔎 Investigação em andamento',
+      label: 'INCIDENTE EM INVESTIGAÇÃO',
+      short: 'INVESTIGANDO',
+      detail: 'A equipe continua analisando o que causou a perda de dados e o reinício do servidor.',
+      summary: 'A investigação continua. Os dados foram perdidos e o motivo do reinício ainda está sendo analisado pela equipe.',
+      eta: '1h–3h',
+      cardTitle: '🔎 INVESTIGAÇÃO ATIVA',
+      cardSubtitle: 'Analisando a causa',
+      ctaTitle: 'Investigação em andamento.',
+      button: '🔎 Servidor indisponível'
+    },
+    arrumado: {
+      badge: '✅ Problema resolvido',
+      label: 'PROBLEMA RESOLVIDO',
+      short: 'RESOLVIDO',
+      detail: 'A falha foi corrigida. A equipe está finalizando as verificações antes de liberar novamente o acesso.',
+      summary: 'O problema principal foi resolvido. Estamos concluindo as verificações finais antes de reabrir o servidor para os jogadores.',
+      eta: 'Verificação final',
+      cardTitle: '✅ INCIDENTE RESOLVIDO',
+      cardSubtitle: 'Verificações finais',
+      ctaTitle: 'Problema resolvido.',
+      button: '✅ Aguardando reabertura'
+    }
+  };
+
   const toast = document.getElementById('toast');
-
-  const statusDot = document.getElementById('server-status-dot');
-  const statusText = document.getElementById('server-status-text');
-  const statusDetail = document.getElementById('server-status-detail');
-  const playerCount = document.getElementById('server-player-count');
 
   function showToast(message) {
     if (!toast) return;
@@ -1365,22 +1492,122 @@
     setTimeout(() => toast.classList.remove('show'), 2600);
   }
 
-  async function copyText(text) {
-    try {
-      await navigator.clipboard.writeText(text);
-      showToast('Copiado: ' + text);
-    } catch {
-      showToast(text);
-    }
+  function normalizeStatusName(value) {
+    const key = String(value || '')
+      .trim()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
+
+    const aliases = {
+      manutencao: 'manutencao',
+      maintenance: 'manutencao',
+      investigando: 'investigando',
+      investigacao: 'investigando',
+      investigation: 'investigando',
+      arrumado: 'arrumado',
+      resolvido: 'arrumado',
+      corrigido: 'arrumado',
+      fixed: 'arrumado'
+    };
+
+    return aliases[key] || null;
   }
 
-  copyButton?.addEventListener('click', () => {
-    copyText(copyButton.dataset.ip || SERVER_ADDRESS);
-  });
+  function setText(selector, value) {
+    document.querySelectorAll(selector).forEach(element => {
+      element.textContent = value;
+    });
+  }
 
-  copyAddressButton?.addEventListener('click', () => {
-    copyText(SERVER_ADDRESS);
-  });
+  function applyStatus(mode, options = {}) {
+    const normalized = normalizeStatusName(mode);
+
+    if (!normalized || !STATUS_PRESETS[normalized]) {
+      console.error('Status inválido. Use: manutencao, investigando ou arrumado.');
+      return false;
+    }
+
+    const preset = {
+      ...STATUS_PRESETS[normalized],
+      ...(options && typeof options === 'object' ? options : {})
+    };
+
+    document.documentElement.dataset.serverState = normalized;
+    setText('[data-status-badge]', preset.badge);
+    setText('[data-status-label]', preset.label);
+    setText('[data-status-short]', preset.short);
+    setText('[data-status-detail]', preset.detail);
+    setText('[data-status-summary]', preset.summary);
+    setText('[data-status-eta]', preset.eta);
+    setText('[data-status-card-title]', preset.cardTitle);
+    setText('[data-status-card-subtitle]', preset.cardSubtitle);
+    setText('[data-status-cta-title]', preset.ctaTitle);
+    setText('[data-status-button]', preset.button);
+
+    localStorage.setItem(STATUS_STORAGE_KEY, JSON.stringify({ mode: normalized, options }));
+    showToast('Status alterado para: ' + preset.label);
+    console.log('Ethernals Bedrock:', preset.label);
+    return true;
+  }
+
+  function setCustomMessage(message) {
+    const value = String(message || '').trim();
+
+    if (!value) {
+      console.error('Digite uma mensagem válida.');
+      return false;
+    }
+
+    setText('[data-status-detail]', value);
+
+    let saved = {};
+    try {
+      saved = JSON.parse(localStorage.getItem(STATUS_STORAGE_KEY) || '{}');
+    } catch {}
+
+    const mode = normalizeStatusName(saved.mode) || 'manutencao';
+    const options = { ...(saved.options || {}), detail: value };
+    localStorage.setItem(STATUS_STORAGE_KEY, JSON.stringify({ mode, options }));
+    showToast('Mensagem de manutenção atualizada.');
+    return true;
+  }
+
+  function setEta(value) {
+    const eta = String(value || '').trim();
+
+    if (!eta) {
+      console.error('Digite uma previsão válida.');
+      return false;
+    }
+
+    setText('[data-status-eta]', eta);
+
+    let saved = {};
+    try {
+      saved = JSON.parse(localStorage.getItem(STATUS_STORAGE_KEY) || '{}');
+    } catch {}
+
+    const mode = normalizeStatusName(saved.mode) || 'manutencao';
+    const options = { ...(saved.options || {}), eta };
+    localStorage.setItem(STATUS_STORAGE_KEY, JSON.stringify({ mode, options }));
+    showToast('Previsão atualizada para: ' + eta);
+    return true;
+  }
+
+  function resetStatus() {
+    localStorage.removeItem(STATUS_STORAGE_KEY);
+    applyStatus('manutencao');
+  }
+
+  function loadSavedStatus() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(STATUS_STORAGE_KEY) || '{}');
+      applyStatus(normalizeStatusName(saved.mode) || 'manutencao', saved.options || {});
+    } catch {
+      applyStatus('manutencao');
+    }
+  }
 
   document.querySelectorAll('a[href^="#"]').forEach(link => {
     link.addEventListener('click', event => {
@@ -1393,238 +1620,26 @@
     });
   });
 
-  function normalizeText(value) {
-    let text = '';
-
-    if (Array.isArray(value)) {
-      text = value.join(' ');
-    } else if (value && typeof value === 'object') {
-      if (Array.isArray(value.clean)) text = value.clean.join(' ');
-      else if (typeof value.clean === 'string') text = value.clean;
-      else text = '';
-    } else {
-      text = String(value ?? '');
+  window.EthernalsStatus = {
+    set: applyStatus,
+    message: setCustomMessage,
+    eta: setEta,
+    reset: resetStatus,
+    help() {
+      console.log([
+        "EthernalsStatus.set('manutencao')",
+        "EthernalsStatus.set('investigando')",
+        "EthernalsStatus.set('arrumado')",
+        "EthernalsStatus.message('Sua mensagem aqui')",
+        "EthernalsStatus.eta('2 horas')",
+        "EthernalsStatus.reset()"
+      ].join('\\n'));
     }
+  };
 
-    return text
-      .replace(/§[0-9A-FK-OR]/gi, '')
-      .replace(/\s+/g, ' ')
-      .trim();
-  }
-
-  function normalizedMatchText(value) {
-    return normalizeText(value)
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '');
-  }
-
-  function motdIsOffline(motd) {
-    const text = normalizedMatchText(motd);
-
-    return text.includes('offline aternos') ||
-           text.includes('aternos offline') ||
-           text.includes('server is offline') ||
-           text.includes('server offline') ||
-           text.includes('servidor offline') ||
-           text.includes('servidor esta offline') ||
-           text.includes('servidor desligado');
-  }
-
-  function motdIsAternosGateway(motd) {
-    const text = normalizedMatchText(motd);
-
-    return text.includes('aternos.org/connect') ||
-           text.includes('why? read this') ||
-           text.includes('why read this') ||
-           (text.includes('connect to') && text.includes('aternos'));
-  }
-
-  function hasValidPlayerLimit(value) {
-    const max = Number(value);
-    return Number.isFinite(max) && max > 0;
-  }
-
-  function classifyResult(result) {
-    if (!result) return 'unknown';
-
-    // O proxy/fallback do Aternos responde ao ping mesmo com o servidor desligado.
-    // Nunca deve ser tratado como servidor realmente online.
-    if (motdIsAternosGateway(result.motd)) return 'offline';
-    if (motdIsOffline(result.motd)) return 'offline';
-
-    if (result.online === false) return 'offline';
-
-    // Só aceita ONLINE se houver resposta de servidor real,
-    // incluindo um limite de jogadores válido.
-    if (result.online === true && hasValidPlayerLimit(result.playersMax)) {
-      return 'online';
-    }
-
-    return 'unknown';
-  }
-
-  function setChecking() {
-    statusDot.className = 'status-dot';
-    statusText.textContent = 'VERIFICANDO SERVIDOR...';
-    statusDetail.textContent = SERVER_ADDRESS;
-    playerCount.textContent = '— / —';
-  }
-
-  function setOnline(data, source = '') {
-    statusDot.className = 'status-dot online';
-    statusText.textContent = 'SERVIDOR ONLINE';
-    statusDetail.textContent = 'Ethernals Bedrock • Minecraft Bedrock';
-
-    const online = Number(data?.playersOnline);
-    const max = Number(data?.playersMax);
-
-    if (Number.isFinite(online) && Number.isFinite(max) && max > 0) {
-      playerCount.textContent = `${online} / ${max}`;
-    } else {
-      playerCount.textContent = '— / —';
-    }
-
-    console.log('ONLINE confirmado por', source, data);
-  }
-
-  function setOffline(detail = 'Servidor desligado no Aternos') {
-    statusDot.className = 'status-dot offline';
-    statusText.textContent = 'SERVIDOR OFFLINE';
-    statusDetail.textContent = detail;
-    playerCount.textContent = '— / —';
-  }
-
-  function setUnavailable() {
-    statusDot.className = 'status-dot';
-    statusText.textContent = 'STATUS INDISPONÍVEL';
-    statusDetail.textContent = 'Não foi possível confirmar o status agora';
-    playerCount.textContent = '— / —';
-  }
-
-  async function fetchJson(url, timeoutMs = 7000) {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), timeoutMs);
-
-    try {
-      const response = await fetch(url, {
-        cache: 'no-store',
-        signal: controller.signal,
-        headers: { 'Accept': 'application/json' }
-      });
-
-      if (!response.ok) throw new Error('HTTP ' + response.status);
-      return await response.json();
-    } finally {
-      clearTimeout(timer);
-    }
-  }
-
-  async function querySnowDev() {
-    const url =
-      'https://mcstatus.snowdev.com.br/api/query/v3/' +
-      SERVER_ADDRESS +
-      '?_=' + Date.now();
-
-    const data = await fetchJson(url);
-
-    return {
-      source: 'SnowDev',
-      online: Boolean(data?.online),
-      playersOnline: Number(
-        data?.players?.online ??
-        data?.players?.now ??
-        data?.onlinePlayers ??
-        0
-      ),
-      playersMax:
-        data?.players?.max ??
-        data?.maxPlayers ??
-        null,
-      motd: normalizeText(
-        data?.motd?.clean ??
-        data?.motd ??
-        ''
-      )
-    };
-  }
-
-  async function queryMcStatusIO() {
-    const url =
-      'https://api.mcstatus.io/v2/status/bedrock/' +
-      SERVER_ADDRESS +
-      '?timeout=5&_=' + Date.now();
-
-    const data = await fetchJson(url);
-
-    return {
-      source: 'mcstatus.io',
-      online: Boolean(data?.online),
-      playersOnline: Number(data?.players?.online ?? 0),
-      playersMax: data?.players?.max ?? null,
-      motd: normalizeText(data?.motd?.clean ?? '')
-    };
-  }
-
-  async function refreshServerStatus() {
-    setChecking();
-
-    const settled = await Promise.allSettled([
-      querySnowDev(),
-      queryMcStatusIO()
-    ]);
-
-    const results = settled
-      .filter(item => item.status === 'fulfilled')
-      .map(item => item.value);
-
-    if (results.length === 0) {
-      setUnavailable();
-      return;
-    }
-
-    const classified = results.map(result => ({
-      ...result,
-      verdict: classifyResult(result)
-    }));
-
-    console.table(classified.map(r => ({
-      fonte: r.source,
-      respostaOnline: r.online,
-      jogadores: r.playersOnline,
-      max: r.playersMax,
-      motd: r.motd,
-      veredito: r.verdict
-    })));
-
-    // Uma resposta ONLINE válida vence respostas offline antigas/em cache.
-    const realOnline = classified.find(r => r.verdict === 'online');
-
-    if (realOnline) {
-      setOnline(realOnline, realOnline.source);
-      return;
-    }
-
-    // Sem nenhuma confirmação real de online, qualquer resposta offline
-    // (inclusive gateway do Aternos) significa OFFLINE.
-    const offline = classified.find(r => r.verdict === 'offline');
-
-    if (offline) {
-      if (motdIsAternosGateway(offline.motd) || motdIsOffline(offline.motd)) {
-        setOffline('Servidor desligado no Aternos');
-      } else {
-        setOffline('Servidor offline');
-      }
-      return;
-    }
-
-    setUnavailable();
-  }
-
-  refreshStatusButton?.addEventListener('click', refreshServerStatus);
-
-  refreshServerStatus();
-  setInterval(refreshServerStatus, 30000);
+  loadSavedStatus();
+  console.log('%cEthernalsStatus pronto', 'font-weight:bold;font-size:14px');
+  console.log('Use EthernalsStatus.help() para ver os comandos.');
 </script>
 </body>
 </html>
